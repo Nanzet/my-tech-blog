@@ -1,0 +1,7 @@
+# 忽略 Hugo 生成的静态文件
+public/
+resources/
+.hugo_build.lock
+
+# Mac 系统垃圾文件
+.DS_Store
