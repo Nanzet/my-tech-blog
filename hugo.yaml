@@ -217,7 +217,7 @@ menu:
           name: Email
           url: mailto:nanzet77@gmail.com
           params:
-              icon: mail
+              icon: brand-gmail
 
 related:
     includeNewer: true
