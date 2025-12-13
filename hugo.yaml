@@ -1,7 +1,7 @@
-baseurl: https://myblog.pages.dev/
+baseurl: https://nanzet-blog.pages.dev/
 languageCode: zh-cn
 theme: hugo-theme-stack
-title: 南泽的小屋
+title: ☃ 菠萝吹雪
 copyright: Example Person
 
 # Theme i18n support
@@ -15,26 +15,18 @@ hasCJKLanguage: true
 languages:
     en:
         languageName: English
-        title: Example Site
+        title: Nanzet's HomePage
         weight: 1
         params:
             sidebar:
-                subtitle: Example description
+                subtitle: I have a mischievous kitten ~ 🐈🍍
     zh-cn:
         languageName: 中文
-        title: 演示站点
+        title: Nanzet 的主页
         weight: 2
         params:
             sidebar:
-                subtitle: 演示说明
-    ar:
-        languageName: عربي
-        languagedirection: rtl
-        title: موقع تجريبي
-        weight: 3
-        params:
-            sidebar:
-                subtitle: وصف تجريبي
+                subtitle: 我有一只调皮的小猫叫菠萝 ~ 🐈🍍
 
 services:
     # Change it to your Disqus shortname before using
@@ -45,21 +37,21 @@ services:
         id:
 
 pagination:
-    pagerSize: 3
+    pagerSize: 10
 
 permalinks:
     post: /p/:slug/
     page: /:slug/
 
 params:
-    mainSections:
+    mainSections: # 定义哪些文件夹算作“主文章”，默认是 post 文件夹。
         - post
     featuredImageField: image
     rssFullContent: true
-    favicon: # e.g.: favicon placed in `static/favicon.ico` of your site folder, then set this field to `/favicon.ico` (`/` is necessary)
+    favicon: # 网站图标。如果放在 static/favicon.ico，这里就填 /favicon.ico。
 
-    footer:
-        since: 2020
+    footer: # 页脚信息
+        since: 2022
         customText:
 
     dateFormat:
@@ -67,7 +59,7 @@ params:
         lastUpdated: Jan 02, 2006 15:04 MST
 
     sidebar:
-        emoji: 🍥
+        emoji: 🌊
         subtitle: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         avatar:
             enabled: true
@@ -217,15 +209,15 @@ menu:
     social:
         - identifier: github
           name: GitHub
-          url: https://github.com/CaiJimmy/hugo-theme-stack
+          url: https://github.com/Nanzet
           params:
               icon: brand-github
 
-        - identifier: twitter
-          name: Twitter
-          url: https://twitter.com
+        - identifier: email
+          name: Email
+          url: mailto:nanzet77@gmail.com
           params:
-              icon: brand-twitter
+              icon: mail
 
 related:
     includeNewer: true
