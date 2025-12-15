@@ -1,7 +1,76 @@
+/* 全局颜色修改 */
+:root {
+    /* -- 主题色 (Links, 按钮等) -- */
+    /* 这里的 #dca265 是你现在的金色，你可以改成喜欢的颜色，比如蓝色 #007bff */
+    --accent: #007bff !important; 
+
+    /* -- 网页背景色 -- */
+    /* 现在的浅灰色 */
+    --body-background: #f6f6f6 !important;
+    
+    /* -- 卡片背景色 (文章块的白色背景) -- */
+    --card-background: #ffffff !important;
+
+    /* -- 字体颜色 -- */
+    --text-color: #343a40 !important;
+    --text-color-dark: #1a1a1a !important;
+}
+
+/* 如果你想专门改暗色模式下的颜色，写在这里 */
+[data-scheme="dark"] {
+    --body-background: #1a1a1a !important;
+    --card-background: #2c2c2c !important;
+    --accent: #5ab9ea !important; /* 暗色模式下可能需要亮一点的颜色 */
+}
+
+/* 左侧菜单栏-关于的图片通用样式 */
 .about-img {
     width: 50%;
+    min-width: 300px;
     display: block;
     // margin: 0 auto;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 调整文章页面的最大宽度 */
+.article-wrapper {
+    /* 默认值通常在 900px 左右，你可以改成 1200px 甚至 100% */
+    max-width: 1350px !important; 
+
+    /* 保持居中 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 调整文章布局宽度和间距 */
+.main-container {
+    max-width: 1350px !important;
+    /* 默认间距较小，加大这个数字，可以让侧边栏离文章更远一点 */
+    gap: 60px !important;
+}
+
+/* 侧边栏单独调整 */
+aside.sidebar {
+    /* 默认通常是 300px */
+    width: 400px !important; 
+    /* 或者你想让它缩放 */
+    flex-basis: 350px !important;
+}
+
+/* 修改全局字体 */
+:root {
+    /* * 优化后的系统字体栈：
+     * 1. system-ui / -apple-system: 让 Mac 使用系统界面字体 (San Francisco)，非常漂亮。
+     * 2. Segoe UI: Windows 的标准英文字体。
+     * 3. PingFang SC: Mac 的中文。
+     * 4. Microsoft YaHei: Windows 的中文。
+     */
+    --font-family-sans-serif: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif !important;
+
+    /* * 代码字体：
+     * JetBrains Mono 通常需要单独安装或引入。
+     * 如果没安装，Menlo (Mac) 和 Consolas (Win) 是最好的替补。
+     */
+    --font-family-monospace: "JetBrains Mono", "Menlo", "Consolas", monospace !important;
 }
