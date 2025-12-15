@@ -19,14 +19,14 @@ languages:
         weight: 1
         params:
             sidebar:
-                subtitle: I have a mischievous kitten ~ 🐈🍍
+                subtitle: I have a mischievous kitten ~ 🐈
     zh-cn:
         languageName: 中文
         title: Nanzet 的主页
         weight: 2
         params:
             sidebar:
-                subtitle: 我有一只调皮的小猫叫菠萝 ~ 🐈🍍
+                subtitle: 我有一只调皮的小猫叫菠萝 ~ 🐈
 
 services:
     # Change it to your Disqus shortname before using
