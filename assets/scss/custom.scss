@@ -47,7 +47,7 @@
 .main-container {
     max-width: 1350px !important;
     /* 默认间距较小，加大这个数字，可以让侧边栏离文章更远一点 */
-    gap: 60px !important;
+    gap: 30px !important;
 }
 
 /* 侧边栏单独调整 */
@@ -73,4 +73,27 @@ aside.sidebar {
      * 如果没安装，Menlo (Mac) 和 Consolas (Win) 是最好的替补。
      */
     --font-family-monospace: "JetBrains Mono", "Menlo", "Consolas", monospace !important;
+}
+
+/* 调整目录树的文字样式 */
+.widget--toc {
+    /* 稍微调小字体，默认可能是 1rem */
+    font-size: 1.3rem !important; 
+    
+    /* 调整行间距，让它看起来不那么挤 */
+    line-height: 1.2 !important;
+}
+
+.widget--toc a {
+    /* 强制在一行显示 */
+    white-space: nowrap !important; 
+    
+    /* 超出部分隐藏 */
+    overflow: hidden !important;
+    
+    /* 超出部分显示省略号 (...) */
+    text-overflow: ellipsis !important;
+    
+    /* 确保它是块级元素才能生效 */
+    display: block !important; 
 }
