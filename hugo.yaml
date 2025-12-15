@@ -48,7 +48,7 @@ params:
         - post
     featuredImageField: image
     rssFullContent: true
-    favicon: # 网站图标。如果放在 static/favicon.ico，这里就填 /favicon.ico。
+    favicon: favicon.png # 网站图标，放在 static/favicon.png
 
     footer: # 页脚信息
         since: 2022
