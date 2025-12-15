@@ -9,22 +9,14 @@ menu:  # 在 Stack 主题中，左侧的主导航栏的名字就叫 main
 ### 关于我 🧑🏻‍💻
 
 * 水瓶座 ♒、INTJ、轻微强迫症 + 洁癖
-
-<img src="image/index.zh-cn/1765771560100.png" class="about-img">
-
-{{< figure src="image/index.zh-cn/1765772255265.png" width="600" title="INTJ 梗图 2" >}}
-
+  `<img src="image/index.zh-cn/1765771560100.png" class="about-img">`
+  `<img src="image/index.zh-cn/1765772255265.png" class="about-img">`
 * PUBG 多年伏地魔选手
-
-{{< figure src="image/index.zh-cn/1765772647235.jpg" width="600" title="PUBG" >}}
-
+  `<img src="image/index.zh-cn/1765772647235.png" class="about-img">`
 * 好奇心强，喜欢学习新东西、写代码、去人少风景好的地方旅游 ~
-
-{{< figure src="image/index.zh-cn/1765773688369.jpg" width="600" title="PUBG" >}}
-
+  `<img src="image/index.zh-cn/1765773688369.png" class="about-img">`
 * 我领养了一只超级调皮的 🐱，胆子很小、粘人，爱撒娇，它很酷有自己的想法。
-
-{{< figure src="image/index.zh-cn/1765773877591.jpg" width="600" title="PUBG" >}}
+  `<img src="image/index.zh-cn/1765773877591.png" class="about-img">`
 
 ### 关于网站 📗
 
