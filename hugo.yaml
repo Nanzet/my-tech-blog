@@ -13,13 +13,6 @@ DefaultContentLanguage: zh-cn
 hasCJKLanguage: true
 
 languages:
-    en:
-        languageName: English
-        title: Nanzet's HomePage
-        weight: 1
-        params:
-            sidebar:
-                subtitle: I have a mischievous kitten ~ 🐈
     zh-cn:
         languageName: 中文
         title: Nanzet 的主页
@@ -158,6 +151,7 @@ params:
         cusdis:
             host:
             id:
+
     widgets:
         homepage:
             - type: search

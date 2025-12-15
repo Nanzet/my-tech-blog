@@ -14,7 +14,7 @@ menu:  # 在 Stack 主题中，左侧的主导航栏的名字就叫 main
 * 最喜欢的电视剧是《怪奇物语》！！！😆
 * 领养了一只超级调皮的小猫咪 🍍，它胆子很小、粘人，爱撒娇，最大的爱好是睡觉 😪
 
-<img src="image/index.zh-cn/1765773877591.png" alt="我的猫咪菠萝" class="about-img">
+<img src="pineapple.png" alt="我的猫咪菠萝" class="about-img">
 
 ### 关于网站 📗
 
