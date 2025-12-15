@@ -10,7 +10,7 @@ menu:  # 在 Stack 主题中，左侧的主导航栏的名字就叫 main
 
 * 水瓶座 ♒、INTJ、轻微强迫症 + 洁癖
 
-{{< figure src="image/index.zh-cn/1765771560100.png" width="600" title="INTJ 梗图 1" >}}
+<img src="image/index.zh-cn/1765771560100.png" class="about-img">
 
 {{< figure src="image/index.zh-cn/1765772255265.png" width="600" title="INTJ 梗图 2" >}}
 
