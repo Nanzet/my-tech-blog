@@ -1,63 +1,42 @@
 /* 全局颜色修改 */
 :root {
-    /* -- 主题色 (Links, 按钮等) -- */
-    /* 这里的 #dca265 是你现在的金色，你可以改成喜欢的颜色，比如蓝色 #007bff */
-    --accent: #007bff !important; 
-
-    /* -- 网页背景色 -- */
-    /* 现在的浅灰色 */
+    // 全局顶部边距
+    --main-top-padding: 30px;
+    // 全局卡片圆角
+    --card-border-radius: 12px;
+    // 标签云卡片圆角
+    --tag-border-radius: 8px;
+    // 卡片间距
+    --section-separation: 38px;
+    // 全局字体大小
+    --article-font-size: 1.5rem;
+    // 行内代码背景色
+    --code-background-color: #f8f8f8;
+    // 行内代码前景色
+    --code-text-color: #e90000;
+    // 主题色 (Links, 按钮等)
+    --accent: #007bff !important;
+    // 网页背景色 (整体背景色)
     --body-background: #f6f6f6 !important;
-    
-    /* -- 卡片背景色 (文章块的白色背景) -- */
+    // 卡片区域背景色 (文章块的白色背景)
     --card-background: #ffffff !important;
 
     /* -- 字体颜色 -- */
     --text-color: #343a40 !important;
     --text-color-dark: #1a1a1a !important;
+
+    &[data-scheme="dark"] {
+        // 行内代码背景色
+        --body-background: #1a1a1a !important;
+        // 行内代码前景色
+        --code-text-color: #e90000;
+        // 卡片区域背景色（暗色模式下）
+        --card-background: #2c2c2c !important;
+        --accent: #5ab9ea !important;
+    }
 }
 
-/* 如果你想专门改暗色模式下的颜色，写在这里 */
-[data-scheme="dark"] {
-    --body-background: #1a1a1a !important;
-    --card-background: #2c2c2c !important;
-    --accent: #5ab9ea !important; /* 暗色模式下可能需要亮一点的颜色 */
-}
-
-/* 左侧菜单栏-关于的图片通用样式 */
-.about-img {
-    width: 50%;
-    min-width: 300px;
-    display: block;
-    // margin: 0 auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-/* 调整文章页面的最大宽度 */
-.article-wrapper {
-    /* 默认值通常在 900px 左右，你可以改成 1200px 甚至 100% */
-    max-width: 1350px !important; 
-
-    /* 保持居中 */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* 调整文章布局宽度和间距 */
-.main-container {
-    max-width: 1350px !important;
-    /* 默认间距较小，加大这个数字，可以让侧边栏离文章更远一点 */
-    gap: 30px !important;
-}
-
-/* 侧边栏单独调整 */
-aside.sidebar {
-    /* 默认通常是 300px */
-    width: 400px !important; 
-    /* 或者你想让它缩放 */
-    flex-basis: 350px !important;
-}
-
+//--------------------------------------------------
 /* 修改全局字体 */
 :root {
     /* * 优化后的系统字体栈：
@@ -75,25 +54,641 @@ aside.sidebar {
     --font-family-monospace: "JetBrains Mono", "Menlo", "Consolas", monospace !important;
 }
 
+// ---------------------------------------------------
+// 文章内容图片圆角阴影
+.article-page .main-article .article-content {
+    img {
+        max-width: 96% !important;
+        height: auto !important;
+        border-radius: 8px;
+    }
+}
+
+// ------------------------------------------------
+// 文章内容引用块样式
+.article-content {
+    blockquote {
+        border-left: 8px solid #5f90cc1f !important;
+        background: #5ab1c11f;
+    }
+}
+
+// ---------------------------------------
+// 代码块基础样式修改
+.highlight {
+    max-width: 102% !important;
+    background-color: var(--pre-background-color);
+    padding: var(--card-padding);
+    position: relative;
+    border-radius: 20px;
+    margin-left: -7px !important;
+    margin-right: -12px;
+    box-shadow: var(--shadow-l1) !important;
+
+    &:hover {
+        .copyCodeButton {
+            opacity: 1;
+        }
+    }
+
+    // keep Codeblocks LTR
+    [dir="rtl"] & {
+        direction: ltr;
+    }
+
+    pre {
+        margin: initial;
+        padding: 0;
+        margin: 0;
+        width: auto;
+    }
+}
+
+// -------------------------------------------------
+// 文章封面高度更改
+.article-list article .article-image img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+
+    @include respond(md) {
+        height: 200px;
+    }
+
+    @include respond(xl) {
+        height: 305px;
+    }
+}
+
+//--------------------------------------------------
+// 左侧菜单栏-关于的图片通用样式
+.about-img {
+    width: 50%;
+    min-width: 300px;
+    display: block;
+    // margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+//--------------------------------------------------
+// 主页卡片布局间距调整
+.main-container {
+    min-height: 100vh;
+    align-items: flex-start;
+    padding: 0 15px;
+    max-width: 1500px !important;
+    gap: var(--section-separation);
+    padding-top: var(--main-top-padding);
+
+    @include respond(md) {
+        padding: 0 37px;
+        gap: 40px; //中等屏幕时的文章宽度
+    }
+
+    .related-contents {
+        overflow-x: visible; //显示隐藏的图标
+        padding-bottom: 15px;
+    }
+
+}
+
+//--------------------------------------------------
+// 页面三栏宽度调整
+.container {
+    margin-left: auto; // 让容器水平居中
+    margin-right: auto;
+
+    .left-sidebar {
+        order: -3; // 在flex布局中调整左侧栏的显示顺序
+        // max-width: var(--left-sidebar-max-width); // 左侧栏最大宽度，使用CSS变量控制
+        max-width: 20%;
+    }
+
+    .right-sidebar {
+        order: -1; // 在flex布局中调整右侧栏的显示顺序
+        // max-width: var(--right-sidebar-max-width); // 右侧栏最大宽度，使用CSS变量控制
+        max-width: 15%;
+
+        /// 当屏幕宽度达到lg时，右侧栏显示为flex布局
+        @include respond(lg) {
+            display: flex;
+        }
+    }
+
+    // 扩展布局模式下的宽度和侧栏宽度设置
+    &.extended {
+        @include respond(md) {
+            max-width: 1024px; // 中等屏幕最大宽度
+            --left-sidebar-max-width: 25%; // 左侧栏最大宽度25%
+            --right-sidebar-max-width: 20% !important; // 右侧栏最大宽度22%
+        }
+
+        @include respond(lg) {
+            max-width: 1280px; // 大屏幕最大宽度
+            --left-sidebar-max-width: 25%; // 左侧栏最大宽度20%
+            --right-sidebar-max-width: 30%; // 右侧栏最大宽度30%
+        }
+
+        @include respond(xl) {
+            max-width: 1453px; // 超大屏幕最大宽度
+            // max-width: 1536px; // 可选
+            --left-sidebar-max-width: 15%; // 左侧栏最大宽度15%
+            --right-sidebar-max-width: 25%; // 右侧栏最大宽度25%
+        }
+    }
+
+    // 紧凑布局模式下的宽度和侧栏宽度设置
+    &.compact {
+        @include respond(md) {
+            --left-sidebar-max-width: 25%; // 左侧栏最大宽度25%
+            max-width: 768px; // 中等屏幕最大宽度
+        }
+
+        @include respond(lg) {
+            max-width: 1024px; // 大屏幕最大宽度
+            --left-sidebar-max-width: 20%; // 左侧栏最大宽度20%
+        }
+
+        @include respond(xl) {
+            max-width: 1280px; // 超大屏幕最大宽度
+        }
+    }
+}
+
+// /* 文章卡片容器，调整文章页面的最大宽度 */
+// .article-wrapper {
+//     /* 默认值通常在 900px 左右，你可以改成 1200px 甚至 100% */
+//     max-width: 1200px !important; 
+
+//     /* 保持居中 */
+//     margin-left: auto;
+//     margin-right: auto;
+// }
+
+/* 正文调整：字体改小 */
+.article-content {
+    /* 修改字体大小 */
+    /* 默认通常是 1.6rem (约25px)，改成 1.1rem (约17px) 会比较秀气 */
+    font-size: 1.5rem !important;
+
+    /* 配合字体变小，行高也可以稍微收一点，不然会显得太松散 */
+    line-height: 1.5 !important;
+}
+
+// 通用侧边栏（比如博客的左侧或右侧边栏），不区分左右，适合全局统一设置侧边栏的样式（如宽度、背景、边框等）
+// aside.sidebar {
+//     /* 默认通常是 300px */
+//     width: 350px !important; 
+//     flex-basis: 250px !important;
+// }
+
+// /* 修改右侧目录栏的宽度 */
+// .right-sidebar {
+//     /* 增加宽度，防止目录文字换行 */
+//     width: 320px !important;
+//     flex-basis: 300px !important;
+// }
+
 /* 调整目录树的文字样式 */
 .widget--toc {
     /* 稍微调小字体，默认可能是 1rem */
-    font-size: 1.3rem !important; 
-    
+    font-size: 1.4rem !important;
+
     /* 调整行间距，让它看起来不那么挤 */
     line-height: 1.2 !important;
 }
 
-.widget--toc a {
-    /* 强制在一行显示 */
-    white-space: nowrap !important; 
-    
+// .widget--toc a {
+//     /* 强制在一行显示 */
+//     white-space: nowrap !important; 
+
+//     /* 超出部分隐藏 */
+//     overflow: hidden !important;
+
+//     /* 超出部分显示省略号 (...) */
+//     text-overflow: ellipsis !important;
+
+//     /* 确保它是块级元素才能生效 */
+//     display: block !important; 
+// }
+
+//-------------------------------------------------------
+//全局页面小图片样式微调
+.article-list--compact article .article-image img {
+    width: var(--image-size);
+    height: var(--image-size);
+    object-fit: cover;
+    border-radius: 17%;
+}
+
+//--------------------------------------------------
+// 归档页面两栏
+@media (min-width: 1024px) {
+    .article-list--compact {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: none;
+        box-shadow: none;
+        gap: 1rem;
+
+        article {
+            background: var(--card-background);
+            border: none;
+            box-shadow: var(--shadow-l2);
+            margin-bottom: 8px;
+            border-radius: 16px;
+        }
+    }
+}
+
+// 归档页面卡片缩放
+.article-list--tile article {
+    transition: .6s ease;
+}
+
+.article-list--tile article:hover {
+    transform: scale(1.03, 1.03);
+}
+
+//--------------------------------------------------
+// 友情链接三栏
+@media (min-width: 1024px) {
+    .article-list--compact.links {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        background: none;
+        box-shadow: none;
+        gap: 1rem;
+
+        article {
+            background: var(--card-background);
+            border: none;
+            box-shadow: var(--shadow-l2);
+            margin-bottom: 8px;
+            border-radius: var(--card-border-radius);
+
+            &:nth-child(odd) {
+                margin-right: 8px;
+            }
+        }
+    }
+}
+
+//--------------------------------------------------
+/*------------------右侧导航栏--------------*/
+// 搜索菜单动画
+.search-form.widget {
+    transition: transform 0.6s ease;
+}
+
+.search-form.widget:hover {
+    transform: scale(1.1, 1.1);
+}
+
+// 归档小图标放大动画
+.widget.archives .widget-archive--list {
+    transition: transform .3s ease;
+}
+
+.widget.archives .widget-archive--list:hover {
+    transform: scale(1.05, 1.05);
+}
+
+//右侧标签放大动画
+.tagCloud .tagCloud-tags a {
+    border-radius: 10px;
+    font-size: 1.4rem;
+    transition: transform .3s ease;
+}
+
+.tagCloud .tagCloud-tags a:hover {
+    transform: scale(1.1, 1.1);
+}
+
+/*------------------首页欢迎板块--------------*/
+// 首页欢迎板块样式
+.welcome {
+    color: var(--card-text-color-main);
+    background: var(--card-background);
+    box-shadow: var(--shadow-l2);
+    border-radius: 30px;
+    display: inline-block;
+}
+
+// 👋 emoji 实现摆动效果
+.shake {
+    display: inline-block;
+    animation: shake 1s;
+    animation-duration: 1s;
+    animation-timing-function: ease;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: none;
+    animation-play-state: running;
+    animation-name: shake;
+    animation-timeline: auto;
+    animation-range-start: normal;
+    animation-range-end: normal;
+    animation-delay: 2s;
+
+    @keyframes shake {
+        0% {
+            transform: rotate(0);
+        }
+
+        25% {
+            transform: rotate(45deg) scale(1.2);
+        }
+
+        50% {
+            transform: rotate(0) scale(1.2);
+        }
+
+        75% {
+            transform: rotate(45deg) scale(1.2);
+        }
+
+        100% {
+            transform: rotate(0);
+        }
+    }
+}
+
+// 实现字符跳动动画
+.jump-text1 {
+    display: inline-block;
+    animation: jump 0.5s 1;
+}
+
+.jump-text2 {
+    display: inline-block;
+    animation: jump 0.5s 1;
+    animation-delay: 0.1s;
+}
+
+.jump-text3 {
+    display: inline-block;
+    animation: jump 0.5s 1;
+    animation-delay: 0.2s;
+}
+
+.jump-text4 {
+    display: inline-block;
+    animation: jump 0.5s 1;
+    animation-delay: 0.3s;
+}
+
+.jump-text5 {
+    display: inline-block;
+    animation: jump 0.5s 1;
+    animation-delay: 0.4s;
+}
+
+.jump-text6 {
+    display: inline-block;
+    animation: jump 0.5s 1;
+    animation-delay: 0.5s;
+}
+
+.jump-text7 {
+    display: inline-block;
+    animation: jump 0.5s 1;
+    animation-delay: 0.6s;
+}
+
+.jump-text8 {
+    display: inline-block;
+    animation: jump 0.5s 1;
+    animation-delay: 0.7s;
+}
+
+.jump-text9 {
+    display: inline-block;
+    animation: jump 0.5s 1;
+    animation-delay: 0.9s;
+}
+
+@keyframes jump {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+//--------------------------------------------------
+// macOS 风格代码块
+.article-content {
+    .highlight:before {
+        content: '';
+        display: block;
+        background: url(/code-header.svg);
+        height: 32px;
+        width: 100%;
+        background-size: 57px;
+        background-repeat: no-repeat;
+        margin-bottom: 5px;
+        background-position: -1px 2px;
+    }
+}
+
+//代码复制按钮
+.article-content .copyCodeButton {
+    position: absolute;
+    top: 10px;
+    right: 18px;
+    border-radius: 12px;
+    opacity: 1;
+    color: #5b87a9ad;
+    background: none;
+    border: none;
+    padding: 0;
+    font-weight: 500;
+}
+
+.article-content .languageCodeButton {
+    position: absolute;
+    border: none;
+    top: 9px;
+    right: 69px;
+    border-radius: 12px;
+    opacity: 1;
+    padding: 0 5px;
+    background: 0;
+    color: #ff9705;
+    font-family: lato;
+    font-size: 1.5rem;
+}
+
+//--------------------------------------------------
+// 代码块过长时折叠实现
+/* 当代码块被标记为"折叠"时应用的样式 */
+.highlight.collapsed {
+    /* 这里设置折叠后的最大高度，比如 300px，你可以自己调整 */
+    max-height: 300px;
+    overflow: hidden;
     /* 超出部分隐藏 */
-    overflow: hidden !important;
-    
-    /* 超出部分显示省略号 (...) */
-    text-overflow: ellipsis !important;
-    
-    /* 确保它是块级元素才能生效 */
-    display: block !important; 
+}
+
+/* 折叠时的底部渐变遮罩，营造"还有内容"的感觉 */
+.highlight.collapsed::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    /* 遮罩高度 */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--card-background));
+    pointer-events: none;
+    /* 让鼠标事件穿透遮罩 */
+    z-index: 9;
+}
+
+/* 展开按钮容器 */
+.read-more-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    /* 改为 flex 以配合之前的居中样式 */
+    align-items: center;
+    justify-content: center;
+}
+
+/* 只有在"折叠状态"下，才显示底部的渐变遮罩 */
+/* 注意：.highlight.collapsed 才有 ::after */
+.highlight.collapsed::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--card-background));
+    pointer-events: none;
+    z-index: 9;
+}
+
+/* ============================================
+   macOS 风格毛玻璃折叠按钮
+   ============================================ */
+/* 按钮本体样式 */
+.read-more-btn button {
+    /* --- 核心：毛玻璃效果 (Glassmorphism) --- */
+    /* 1. 背景色：使用极低透明度的白色（亮色模式下） */
+    background: rgba(255, 255, 255, 0.65);
+
+    /* 2. 背景模糊：这是实现"玻璃感"的关键，模糊按钮背后的代码 */
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    /* 兼容 Safari */
+
+    /* 3. 边框：非常细微的半透明边框，模拟光线边缘 */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    /* 4. 阴影：柔和的扩散阴影，增加层次感 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    /* --- 文字与结构 --- */
+    /* 使用深灰色，保证阅读清晰 */
+    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    /* 确保用系统字体 */
+    font-weight: 500;
+    font-size: 13px;
+
+    /* 胶囊形状 */
+    border-radius: 20px;
+    padding: 6px 16px;
+    cursor: pointer;
+
+    /* 动画过渡 */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    /* 布局 */
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* 图标和文字的间距 */
+    margin-top: -20px;
+    /* 稍微往上提一点，压在遮罩上 */
+}
+
+/* 鼠标悬停状态 (Hover) */
+.read-more-btn button:hover {
+    /* 悬停时背景变亮一点 */
+    background: rgba(255, 255, 255, 0.85);
+    /* 阴影加深 */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+    /* 轻微上浮 */
+}
+
+/* 点击/激活状态 */
+.read-more-btn button:active {
+    transform: scale(0.96);
+    /* 像 macOS 按钮一样轻微缩小 */
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* ============================================
+   🌑 暗色模式适配 (Dark Mode)
+   Stack 主题会自动切换，这里必须适配，
+   否则在暗色背景下亮白色按钮会很刺眼。
+   ============================================ */
+[data-scheme="dark"] .read-more-btn button {
+    /* 背景：改为半透明的黑色/深灰 */
+    background: rgba(40, 40, 40, 0.6);
+
+    /* 边框：深色模式下的边框更淡 */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    /* 文字：变白 */
+    color: rgba(255, 255, 255, 0.9);
+
+    /* 阴影：加深 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 暗色模式悬停 */
+[data-scheme="dark"] .read-more-btn button:hover {
+    background: rgba(60, 60, 60, 0.75);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+//--------------------------------------------------
+// 键盘样式，可使用如下 Markdown 高级语法生成键盘样式：<kbd>CTRL</kbd>+<kbd>C</kbd>
+kbd {
+    margin: 0 .1em;
+    padding: .1em .6em;
+    font-size: .8em;
+    color: #242729;
+    background: #fff;
+    border: 1px solid #adb3b9;
+    border-radius: 3px;
+    box-shadow: 0px 1px 0 rgba(12, 13, 14, 0.2), 0 0 0 2px #fff inset;
+    white-space: nowrap;
+    vertical-align: middle;
+    font-family: monospace;
+}
+
+//--------------------------------------------------
+// 头像旋转动画
+.sidebar header .site-avatar .site-logo {
+    transition: transform 1.65s ease-in-out; // 旋转时间
+}
+
+.sidebar header .site-avatar .site-logo:hover {
+    transform: rotate(360deg); // 旋转角度为360度
 }

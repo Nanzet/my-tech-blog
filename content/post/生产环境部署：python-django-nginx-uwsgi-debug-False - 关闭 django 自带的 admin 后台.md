@@ -2,7 +2,7 @@
 title: "生产环境部署：python Django Nginx Uwsgi Debug False   关闭 Django 自带的 Admin 后台"
 date: 2020-10-18 21:32:52
 slug: ""
-image: "https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018223757.jpg"
+image: ""
 categories:
     - 技术
 tags:
@@ -16,19 +16,19 @@ draft: false
 >
 > &ensp;该种部署方式中nginx接收Web的所有请求，其中所有的静态请求由nginx来处理，所有的非静态请求通过uwsgi传递给Django，由Django来进行处理，从而完成一次WEB请求。
 
-### 1. 测试部署环境
+## 测试部署环境
 
 - 操作系统debian 10
 - python3.7
 - django2.2
 
-### 2. 安装 nginx 及配置
+## 安装 nginx 及配置
 
-#### 2.1 切换到 root 权限，安装
+### 切换到 root 权限，安装
 
 `apt-get install nginx`
 
-#### 2.2 添加对应网站的配置文件和测试内容
+### 添加对应网站的配置文件和测试内容
 
 `vim /etc/nginx/conf.d/wj.conf`
 
@@ -51,17 +51,17 @@ server {
 }
 ```
 
-#### 2.3 重启 nginx 服务
+### 重启 nginx 服务
 
 `service nginx restart`
 
-#### 2.4 本地测试运行：[http://localhost:8088/](http://localhost:8088/)
+### 本地测试运行：[http://localhost:8088/](http://localhost:8088/)
 
 <img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018214308.png" style="zoom:80%;" />
 
-### 3. python3.7 安装 uwsgi
+## python3.7 安装 uwsgi
 
-#### 3.1 解决报错
+### 解决报错
 
 ```shell
 sudo apt install python3.7-dev
@@ -69,7 +69,7 @@ sudo apt install python3.7-dev
 pip3 install uwsgi --upgrade
 ```
 
-#### 3.2 测试 uwsgi，创建 test.py 文件
+### 测试 uwsgi，创建 test.py 文件
 
 ```python
 def application(env, start_response):
@@ -77,19 +77,19 @@ def application(env, start_response):
     return [b"Hello World"]
 ```
 
-#### 3.3 通过 uwsgi 测试运行该文件
+### 通过 uwsgi 测试运行该文件
 
 `uwsgi --http :8001 --wsgi-file ./test.py`
 
 <img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018214529.png" style="zoom:80%;" />
 
-#### Tips:（以下内容仅作参考不做配置也可以，关闭服务时 ctrl+c 即可）
+### Tips:（以下内容仅作参考不做配置也可以，关闭服务时 ctrl+c 即可）
 
 - 可在项目根目录下新建两个文件wj_uwsgi.pid和wj_uwsgi.status，一个记录pid号方便重启和停止服务，一个记录服务运行状态。
 - 修改你的uwsgi配置文件，wj_uwsgi.ini文件添加以下配置：
 
 ```ini
-stats=%(chdir)/wj_uwsgi.status         
+stats=%(chdir)/wj_uwsgi.status   
 pidfile=%(chdir)/wj_uwsgi.pid
 ```
 
@@ -104,11 +104,11 @@ uwsgi --reload xxx.pid
 uwsgi --stop xxx.pid
 ```
 
-### 4. 配置 Django 与 uwsgi 连接
+## 配置 Django 与 uwsgi 连接
 
 &ensp;django项目位置为：/home/mycode/webshellCheck
 
-#### 4.1 在项目根目录 webshellCheck 下新建 wj_uwsgi.ini 文件
+### 在项目根目录 webshellCheck 下新建 wj_uwsgi.ini 文件
 
 ```ini
 # wj_uwsgi file
@@ -142,11 +142,11 @@ vacuum = true
 - chdir 指定项目的目录。
 - module webshellCheck.wsgi ，可以这么来理解，对于wj_uwsgi.ini文件来说，与它的平级的有一个webshellCheck目录，这个目录下有一个wsgi.py文件。
 
-#### 4.2 在项目目录下通过 uwsgi 命令读取 wj_uwsgi.ini 文件启动项目
+### 在项目目录下通过 uwsgi 命令读取 wj_uwsgi.ini 文件启动项目
 
 `uwsgi --ini ./wj_uwsgi.ini`
 
-#### 4.3 修改 nginx.conf 配置文件
+### 修改 nginx.conf 配置文件
 
 ```conf
 server {
@@ -174,7 +174,7 @@ server {
 }
 ```
 
-#### 4.4 重启 nginx，然后启动 uwsgi
+### 重启 nginx，然后启动 uwsgi
 
 ```shell
 service nginx restart
@@ -182,7 +182,7 @@ service nginx restart
 uwsgi --ini ./wj_uwsgi.ini
 ```
 
-#### 4.5 在浏览器测试访问：localhost:8099
+### 在浏览器测试访问：localhost:8099
 
 <img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018215145.png" style="zoom:80%;" />
 
@@ -190,9 +190,9 @@ uwsgi --ini ./wj_uwsgi.ini
 
 <img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018215253.png" style="zoom:80%;" />
 
-### 5. 生产环境配置：Django debug=False+关闭django自带的admin后台
+## 生产环境配置：Django debug=False+关闭django自带的admin后台
 
-#### 5.1 静态文件配置
+### 静态文件配置
 
 &ensp;关于本项目中前端打包的静态文件放在项目根目录下的frontend/dist/static路径下，部署到生产环境中需要将debug设置为false，静态文件相关配置如下:
 
@@ -227,7 +227,7 @@ TEMPLATES = [
 ......
 ```
 
-#### 5.2 关闭 django 自带的 admin 后台，主 urls.py 的配置
+### 关闭 django 自带的 admin 后台，主 urls.py 的配置
 
 ```python
 from django.contrib import admin
@@ -244,7 +244,7 @@ urlpatterns = [
 
 &ensp;Django关闭DEBUG模式后，就相当于是生产环境了，Django官网上指出如果是django框架一旦作为生产环境，那么它的静态文件访问接口就不应该从Django框架中走了，应该有独立的web环境，首推nginx 。在开发过程中，开发人员在框架的根目录下创建一个static目录，目录在根据里面有几个APP创建对应APP程序静态文件目录。但是一旦放到生产环境（也就是关闭掉DEBUG模式），你在nginx中就要单独做访问/static/目录的路由。
 
-#### 5.3 存在多个应用内的静态文件时的配置
+### 存在多个应用内的静态文件时的配置
 
 &ensp;这里由于只有一个应用的静态文件需要加载，所以注意nginx的配置中项目运行需要加载的静态文件就是一个绝对路径，上面关于静态文件的配置完全可以满足本项目的需求。而当该项目下不止一个app且每个app下都有独立的静态文件的时候，我们就需要将所有的静态文件都统一放到一个目录下。django提供了一个比较方便的方法：
 

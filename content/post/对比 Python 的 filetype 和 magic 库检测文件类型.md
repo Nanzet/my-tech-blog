@@ -2,14 +2,14 @@
 title: "对比 Python 的 Filetype 和 Magic 库检测文件类型"
 date: 2020-09-17 21:47:45
 slug: "filetype-detect-compare"
-image: "https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20200917215705.jpg"
+image: ""
 categories:
     - 技术
 tags:
     - Python
 draft: false
 ---
-### 1. 需求场景和测试结论
+## 需求场景和测试结论
 
 **测试环境**：python 3.7.x | windows 10 | debian 10
 
@@ -21,9 +21,9 @@ draft: false
 >
 > b. magic库更可靠更详细，filetype会出现误检测和无结果。
 
-### 2. 获取文件后缀名的方法
+## 获取文件后缀名的方法
 
-#### 2.1 使用正则表达式
+### 使用正则表达式
 
 ```python
 import re
@@ -33,7 +33,7 @@ fstr = re.search(r'.*\.(.*)$', file_name, re.I).group(1)
 print(fstr)	# "asp"
 ```
 
-#### 2.2. 使用os.path.basename()方法
+### 使用 os.path.basename() 方法
 
 &ensp;Unix命令行中的 `file <文件路径>`命令，就是通过该方式实现功能的。
 
@@ -45,15 +45,15 @@ fstr = os.path.basename(file_name).split('.')[-1].lower()
 print(fstr)	# "jsp"
 ```
 
-### 3. Python的filetype和magic库安装
+## Python的filetype和magic库安装
 
-#### 3.1 [filetype](https://github.com/h2non/filetype.py)
+### [filetype](https://github.com/h2non/filetype.py)
 
 ```
 pip install filetype
 ```
 
-#### 3.2 [magic](https://github.com/ahupp/python-magic)
+### [magic](https://github.com/ahupp/python-magic)
 
 ```
 # Linux下安装:
@@ -67,7 +67,7 @@ pip install python-magic
 pip install python-magic-bin 0.4.14
 ```
 
-### 4. 检测脚本
+## 检测脚本
 
 ```python
 # coding = utf-8
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     ck_ftype(aa)
 ```
 
-### 5. 部分检测结果截图
+## 部分检测结果截图
 
 ![](https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20200917144610.png)
 

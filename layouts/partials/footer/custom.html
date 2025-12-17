@@ -1,0 +1,53 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 设定阈值：超过 400px 就折叠
+        const MAX_HEIGHT = 400; 
+        
+        // 获取所有代码块
+        const codeBlocks = document.querySelectorAll('.highlight');
+    
+        codeBlocks.forEach(block => {
+            // 如果代码块高度超过阈值
+            if (block.offsetHeight > MAX_HEIGHT) {
+                
+                // 1. 初始状态：添加折叠类
+                block.classList.add('collapsed');
+    
+                // 2. 创建按钮容器
+                const btnDiv = document.createElement('div');
+                btnDiv.className = 'read-more-btn';
+                
+                // 3. 创建按钮
+                const btn = document.createElement('button');
+                // 初始文案
+                btn.innerHTML = '<span>⇩</span> 展开代码';
+                
+                // 4. 绑定点击事件 (核心逻辑)
+                btn.addEventListener('click', function() {
+                    // 检查当前是否处于折叠状态
+                    const isCollapsed = block.classList.contains('collapsed');
+    
+                    if (isCollapsed) {
+                        // --- 执行展开 ---
+                        block.classList.remove('collapsed');
+                        block.style.maxHeight = 'none'; // 移除高度限制
+                        btn.innerHTML = '<span>⇧</span> 收起代码'; // 修改文案
+                    } else {
+                        // --- 执行收起 ---
+                        block.classList.add('collapsed');
+                        block.style.maxHeight = ''; // 恢复 CSS 里的高度限制
+                        btn.innerHTML = '<span>⇩</span> 展开代码'; // 恢复文案
+                        
+                        // 体验优化：收起时，自动滚动到代码块顶部
+                        // (否则页面会突然变短，用户可能找不到刚才看到哪了)
+                        block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+    
+                // 5. 插入按钮
+                btnDiv.appendChild(btn);
+                block.appendChild(btnDiv);
+            }
+        });
+    });
+</script>

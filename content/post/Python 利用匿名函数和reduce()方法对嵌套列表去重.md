@@ -2,7 +2,7 @@
 title: "Python 利用匿名函数和 reduce() 方法对嵌套列表去重"
 date: 2020-07-04 12:57:00
 slug: "python-list-deduplication"
-image: "https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/2020070403.jpg"
+image: ""
 categories:
     - 技术
 tags:

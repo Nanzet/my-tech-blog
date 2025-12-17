@@ -2,14 +2,14 @@
 title: "解决 VSCode 安装 Python 扩展后自动下载 microsoft python language server 缓慢的问题"
 date: 2020-07-07 23:52:30
 slug: "vscode-python-language-server-slow"
-image: "https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/2020070701.jpg"
+image: ""
 categories:
     - 技术
 tags:
     -  VSCode
 draft: false
 ---
-### 1. 采取手动安装的方法
+## 采取手动安装的方法
 
 1、根据失败提示记录下载nupkg文件，例如：[https://pvsc.azureedge.net/python-language-server-stable/Python-Language-Server-win-x64.0.5.51.nupkg](https://pvsc.azureedge.net/python-language-server-stable/Python-Language-Server-win-x64.0.5.51.nupkg)
 

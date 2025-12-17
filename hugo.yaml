@@ -15,7 +15,7 @@ hasCJKLanguage: true
 languages:
     zh-cn:
         languageName: 中文
-        title: Nanzet 的主页
+        title: Nanzet Oliver
         weight: 2
         params:
             sidebar:

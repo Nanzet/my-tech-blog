@@ -1,8 +1,8 @@
 ---
-title: "简单 - Django 修改自增主键 id 为使用 snowflake 自定义生成主键 id"
+title: "Django 修改自增主键 id 为使用 snowflake 自定义生成主键 id"
 date: 2020-07-14 10:00:00
 slug: "django-snowflake-id"
-image: "https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/2020071602.jpg"
+image: ""
 categories:
     - 技术
 tags:
@@ -10,15 +10,15 @@ tags:
     - Django
 draft: false
 ---
-#### 1. 场景
+## 场景
 
-##### 1.1 安装环境
+### 安装环境
 
 python==3.7.1
 
 Django==2.2
 
-##### 1.2 应用场景
+### 应用场景
 
 &ensp;原来使用的所有数据库表模型里的主键都是自定义或数据库自动生成的自增ID，它存在以下两大缺点无法满足后续的需求，使用雪花算法自定义生成主键ID可以避免这种问题。
 
@@ -28,7 +28,7 @@ Django==2.2
 
 &ensp;b. 不安全，客户端可以根据自增ID很轻易猜出我们的业务数据
 
-#### 2. 了解雪花算法snowflake
+## 了解雪花算法snowflake
 
 **原理：**
 
@@ -42,9 +42,9 @@ Django==2.2
 
 &ensp; 依赖系统时钟，如果系统时钟有问题，会导致ID重复（该问题可以通过很多方式避免）
 
-#### 3. 过程
+## 过程
 
-##### 3.1 models.py中创建测试原始模型类testRMF，表名'tb_testRMF'
+### models.py中创建测试原始模型类testRMF，表名'tb_testRMF'
 
 **字段：**
 自增主键：test_uid   BigAutoField、
@@ -70,7 +70,7 @@ class testRMF(models.Model):
         verbose_name = verbose_name_plural = '测试数据表'
 ```
 
-##### 3.2 生成并应用数据库迁移文件，数据表生成
+### 生成并应用数据库迁移文件，数据表生成
 
 ```python
 python3 manage.py makemigrations
@@ -81,7 +81,7 @@ python3 manage.py migrate
 
 ![](https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/2020071401.jpg)
 
-##### 3.3 修改为使用snowflake自定义生成主键ID
+### 修改为使用 snowflake 自定义生成主键 ID
 
   首先需要将原来的测试原始模型类testRMF注释掉，运行3.2两行代码移除数据表。
 

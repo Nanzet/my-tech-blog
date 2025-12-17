@@ -2,20 +2,20 @@
 title: "Python3 利用 Reduce() 函数对多层嵌套列表字典数据去重合并"
 date: 2020-09-23 22:11:00
 slug: "python-reduce-list-comnibe"
-image: "https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20200923224555.jpg"
+image: ""
 categories:
     - 技术
 tags:
     - Python
 draft: false
 ---
-### 1、需求场景
+## 需求场景
 
 &ensp;基于角色的权限设计，在登录接口中对当前用户角色权限的权限字典进行构造，由于当前用户可能拥有多个角色（普通用户、管理员1、管理员2、超级管理员...），导致权限数据字典可能会出现这种情况：权限字典列表中，不同角色模块字典下具有相同、不同或部分的接口代号、地址。
 
 &ensp;以下方法可以对当前场景下多层嵌套的列表字典数据进行去重并合并同模块的接口数据，可以根据业务需求修改下面的代码。
 
-### 2、功能测试代码
+## 功能测试代码
 
 ```python
 # coding=utf-8
@@ -91,7 +91,7 @@ perm_dict = reduce(sum_dict, aa)
 print(perm_dict)
 ```
 
-### 3、运行结果
+## 运行结果
 
 ```json
 {
