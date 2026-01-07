@@ -2,7 +2,7 @@
 title: "小米手环 5 NFC 模拟加密 IC 卡"
 date: 2020-10-09 22:53:00
 slug: "xiaomi-band-ic"
-image: "https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201010001853.png"
+image: ""
 categories:
     - 兴趣
 tags:

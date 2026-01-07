@@ -123,13 +123,29 @@
 //--------------------------------------------------
 // 左侧菜单栏-关于的图片通用样式
 .about-img {
-    width: 50%;
+    width: 40%;
     min-width: 300px;
     display: block;
     // margin: 0 auto;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+.img-row {
+    display: flex;
+    gap: 16px;
+    /* 图片间距，可调整 */
+    justify-content: center;
+    /* 居中，可选 */
+    align-items: flex-start;
+    /* 顶部对齐 */
+}
+
+.img-row img {
+    max-width: 48%;
+    /* 或你想要的宽度 */
+    height: auto;
+}
+
 
 //--------------------------------------------------
 // 主页卡片布局间距调整
@@ -691,4 +707,26 @@ kbd {
 
 .sidebar header .site-avatar .site-logo:hover {
     transform: rotate(360deg); // 旋转角度为360度
+}
+
+// 音乐卡片样式
+.music-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 24px 0;
+    /* 背景半透明 */
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 16px;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.music-card iframe {
+    border-radius: 8px;
+    background: transparent;
 }

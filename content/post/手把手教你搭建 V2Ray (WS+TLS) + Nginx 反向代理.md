@@ -2,7 +2,7 @@
 title: "手把手教你搭建 V2Ray (WS+TLS) + Nginx 反向代理"
 date: 2020-09-14 17:00:00
 slug: "v2ray-nginx-websocket-tls"
-image: "https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/11.jpg"
+image: ""
 categories:
     - 兴趣
 tags:

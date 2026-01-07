@@ -15,11 +15,11 @@ hasCJKLanguage: true
 languages:
     zh-cn:
         languageName: 中文
-        title: Nanzet Oliver
+        title: Nanzet
         weight: 2
         params:
             sidebar:
-                subtitle: 我有一只调皮的小猫叫菠萝 ~ 🐈
+                subtitle: 保持乐观，持续学习
 
 services:
     # Change it to your Disqus shortname before using
@@ -30,7 +30,7 @@ services:
         id:
 
 pagination:
-    pagerSize: 10
+    pagerSize: 6
 
 permalinks:
     post: /p/:slug/
