@@ -105,6 +105,32 @@
 }
 
 // -------------------------------------------------
+// 主页文章列表容器修改，PC端两栏，移动端一栏
+.article-list {
+    display: grid;
+    grid-template-columns: 1fr; // 默认一栏
+
+    gap: 2rem; // 卡片间距
+
+    @media (min-width: 768px) {
+        grid-template-columns: 1fr 1fr; // 两栏
+    }
+}
+
+// 主页文章卡片悬浮动画
+.article-list article {
+    transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    will-change: transform, box-shadow;
+}
+
+.article-list article:hover {
+    // transform: translateY(-8px) scale(1.03);
+    transform: scale(1.03, 1.03);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+    z-index: 2;
+}
+
 // 文章封面高度更改
 .article-list article .article-image img {
     width: 100%;
@@ -118,6 +144,15 @@
     @include respond(xl) {
         height: 305px;
     }
+}
+
+// 主页文章卡片标题字体大小
+.article-list article .article-title,
+.article-list .article-title,
+.article-list article h2 {
+    font-size: 1.8rem !important; // 你想要的大小
+    font-weight: bold;
+    line-height: 1.2;
 }
 
 //--------------------------------------------------
