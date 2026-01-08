@@ -107,15 +107,8 @@ params:
             serverURL: https://waline-comments-wheat-six.vercel.app
             lang: zh-CN
             pageview: true # 开启阅读量
-            # 👇 添加这行：设置无头像用户的默认风格
-            # 可选值：
-            # 'mp' (默认灰色人像)
-            # 'identicon' (几何图案，推荐)
-            # 'monsterid' (小怪物，推荐，很可爱)
-            # 'wavatar' (卡通脸)
-            # 'retro' (复古像素)
-            # 'robohash' (机器人)
-            avatar: 'monsterid'
+            avatar: 'monsterid' # 默认兜底头像
+            gravatar: 'https://cravatar.cn/avatar/'
             emoji:
                 - https://unpkg.com/@waline/emojis@1.0.1/weibo
             requiredMeta:
