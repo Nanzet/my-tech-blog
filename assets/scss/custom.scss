@@ -7,7 +7,7 @@
     // 标签云卡片圆角
     --tag-border-radius: 8px;
     // 卡片间距
-    --section-separation: 38px;
+    --section-separation: 20px;
     // 全局字体大小
     --article-font-size: 1.5rem;
     // 行内代码背景色
@@ -132,20 +132,34 @@
 }
 .img-row {
     display: flex;
-    gap: 16px;
     /* 图片间距，可调整 */
-    justify-content: center;
+    gap: 16px;
     /* 居中，可选 */
-    align-items: flex-start;
+    justify-content: center;
     /* 顶部对齐 */
+    align-items: flex-start;
+    margin: 16px 0;
 }
 
 .img-row img {
-    max-width: 48%;
     /* 或你想要的宽度 */
+    max-width: 48%;
     height: auto;
+    border-radius: 8px;
+    object-fit: cover;
 }
 
+@media (max-width: 768px) {
+    .img-row {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .img-row img {
+        max-width: 100%;
+    }
+}
 
 //--------------------------------------------------
 // 主页卡片布局间距调整
