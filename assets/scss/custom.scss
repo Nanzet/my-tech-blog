@@ -759,16 +759,16 @@ kbd {
 /* 汉堡按钮在移动端的位置和大小 */
 @media (max-width: 768px) {
     #toggle-menu {
-        left: 18px !important;
+        left: 15px !important;
         right: auto !important;
-        top: 18px !important;
+        top: 15px !important;
         position: fixed !important;
         z-index: 2000;
     }
 
     .hamburger-box {
-        width: 36px !important;
-        height: 36px !important;
+        width: 28px !important;
+        height: 28px !important;
     }
 
     .hamburger-inner,
@@ -777,7 +777,7 @@ kbd {
         width: 28px !important;
         height: 3px !important;
         border-radius: 2px !important;
-        background: #333 !important; // 或用 var(--accent) 主题色
+        background: orange !important; // 或用 var(--accent) 主题色
     }
 }
 
