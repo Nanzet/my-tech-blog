@@ -63,3 +63,13 @@
         if (document.readyState === "complete") NProgress.done();
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    mediumZoom('.article-content img', {
+      margin: 24,
+      background: '#000',
+      scrollOffset: 40,
+    });
+  });
+</script>
