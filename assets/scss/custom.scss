@@ -744,3 +744,46 @@ kbd {
     border-radius: 8px;
     background: transparent;
 }
+
+// 移动端汉堡图标兼容修改
+/* 汉堡按钮通用美化 */
+.hamburger {
+    z-index: 1001;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 8px;
+    transition: background 0.2s;
+}
+
+/* 汉堡按钮在移动端的位置和大小 */
+@media (max-width: 768px) {
+    #toggle-menu {
+        left: 18px !important;
+        right: auto !important;
+        top: 18px !important;
+        position: fixed !important;
+        z-index: 2000;
+    }
+
+    .hamburger-box {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    .hamburger-inner,
+    .hamburger-inner::before,
+    .hamburger-inner::after {
+        width: 28px !important;
+        height: 3px !important;
+        border-radius: 2px !important;
+        background: #333 !important; // 或用 var(--accent) 主题色
+    }
+}
+
+/* 汉堡按钮激活时颜色 */
+.hamburger.is-active .hamburger-inner,
+.hamburger.is-active .hamburger-inner::before,
+.hamburger.is-active .hamburger-inner::after {
+    background: var(--accent) !important;
+}
