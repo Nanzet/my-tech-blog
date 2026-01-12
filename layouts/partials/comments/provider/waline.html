@@ -1,5 +1,4 @@
-<script src='//unpkg.com/@waline/client@v3/dist/waline.js'></script>
-<link href='//unpkg.com/@waline/client@v3/dist/waline.css' rel='stylesheet' />
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@3.8.0/dist/waline.css"/>
 <div id="waline" class="waline-container"></div>
 <style>
     .waline-container {
@@ -30,8 +29,14 @@
 {{- end -}}
 {{- end -}}
 
-<script>
-    /// Waline client configuration see: https://waline.js.org/en/reference/client.html
-    Waline.init({{ $config | jsonify | safeJS }});
+<script type="module">
+  // 使用 ES Module 导入官方 client 的 init（方案 A）
+  import { init } from 'https://unpkg.com/@waline/client@3.8.0/dist/waline.js';
+
+  // Hugo 注入的配置（已经完成 key 的映射）
+  const config = {{ $config | jsonify | safeJS }};
+
+  // init 要求至少包含 el 与 serverURL（请在 site params 中确认已配置）
+  init(config);
 </script>
 {{- end -}}
