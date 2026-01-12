@@ -108,7 +108,6 @@ params:
             lang: zh-CN
             pageview: true # 开启阅读量
             avatar: 'monsterid' # 默认兜底头像
-            gravatar: 'https://cravatar.cn/avatar/'
             emoji:
                 - https://unpkg.com/@waline/emojis@1.0.1/weibo
                 - https://cdn.jsdelivr.net/gh/walinejs/emojis@1.0.0/bilibili
@@ -123,6 +122,7 @@ params:
             locale:
                 admin: 博主
                 placeholder: 欢迎留下小脚印(～￣▽￣)～
+            turnstileKey: 0x4AAAAAACL-8pw8VX5KSqFo
 
         twikoo:
             envId:
