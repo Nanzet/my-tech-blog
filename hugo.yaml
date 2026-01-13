@@ -19,7 +19,7 @@ languages:
         weight: 2
         params:
             sidebar:
-                subtitle: 保持乐观，持续学习
+                subtitle: Just-in-Time Learning
 
 services:
     # Change it to your Disqus shortname before using
