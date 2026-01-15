@@ -68,12 +68,12 @@
                 Loading...
             </span>
             <script type="module">
-                import { pageviewCount } from 'https://npm.elemecdn.com/@waline/client@v3/dist/waline.js';
-                
+                import { pageviewCount } from 'https://unpkg.com/@waline/client@3.8.0/dist/waline.js';
                 pageviewCount({
                     serverURL: '{{ .Site.Params.comments.waline.serverURL }}',
                     selector: '.waline-pageview-count',
-                    update: true // 允许在文章页增加计数
+                    // 保持之前的逻辑：本地不统计，线上统计
+                    update: {{ if hugo.IsServer }}false{{ else }}true{{ end }}
                 });
             </script>
         </div>

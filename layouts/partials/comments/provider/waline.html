@@ -36,6 +36,10 @@
   // Hugo 注入的配置（已经完成 key 的映射）
   const config = {{ $config | jsonify | safeJS }};
 
+  // 🛑 再次强调：这里一定要禁用 pageview，由 details.html 接管
+  config.pageview = false;
+  delete config.pageview;
+
   // init 要求至少包含 el 与 serverURL（请在 site params 中确认已配置）
   init(config);
 </script>
