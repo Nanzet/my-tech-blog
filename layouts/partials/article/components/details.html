@@ -1,0 +1,94 @@
+<div class="article-details">
+    {{ if .Params.categories }}
+    <header class="article-category">
+        {{ range (.GetTerms "categories") }}
+        <a href="{{ .RelPermalink }}" {{ with .Params.style
+            }}style="background-color: {{ .background }}; color: {{ .color }};"
+            {{ end }}>
+            {{ .LinkTitle }}
+        </a>
+        {{ end }}
+    </header>
+    {{ end }}
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="{{ .RelPermalink }}">
+                {{- .Title -}}
+            </a>
+        </h2>
+
+        {{ with .Params.description }}
+        <h3 class="article-subtitle">
+            {{ . }}
+        </h3>
+        {{ end }}
+    </div>
+
+    {{ $showReadingTime := .Params.readingTime | default
+    (.Site.Params.article.readingTime) }}
+    {{ $showDate := not .Date.IsZero }}
+
+    {{/* 👇 新增变量：总是显示 footer，或者你可以根据配置控制 */}}
+    {{ $showFooter := or $showDate $showReadingTime true }}
+
+    {{ if $showFooter }}
+    <footer class="article-time">
+        {{ if $showDate }}
+        <div>
+            {{ partial "helper/icon" "date" }}
+            <time class="article-time--published"
+                datetime='{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}'>
+                {{- .Date | time.Format (or .Site.Params.dateFormat.published
+                "Jan 02, 2006") -}}
+            </time>
+        </div>
+        {{ end }}
+
+        {{ if $showReadingTime }}
+        <div>
+            {{ partial "helper/icon" "clock" }}
+            <time class="article-time--reading">
+                {{ T "article.readingTime" .ReadingTime }}
+            </time>
+        </div>
+        {{ end }}
+
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-eye" width="24" height="24"
+                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                <path
+                    d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+            </svg>
+            <span class="waline-pageview-count" data-path="{{ .RelPermalink }}">
+                Loading...
+            </span>
+            <script type="module">
+                import { pageviewCount } from 'https://npm.elemecdn.com/@waline/client@v3/dist/waline.js';
+                
+                pageviewCount({
+                    serverURL: '{{ .Site.Params.comments.waline.serverURL }}',
+                    selector: '.waline-pageview-count',
+                    update: true // 允许在文章页增加计数
+                });
+            </script>
+        </div>
+    </footer>
+    {{ end }}
+
+    {{ if .IsTranslated }}
+    <footer class="article-translations">
+        {{ partial "helper/icon" "language" }}
+        <div>
+            {{ range .Translations }}
+            <a href="{{ .Permalink }}" class="link">{{ .Language.LanguageName
+                }}</a>
+            {{ end }}
+        </div>
+    </footer>
+    {{ end }}
+</div>

@@ -73,3 +73,22 @@
     });
   });
 </script>
+{{- /* 逻辑判断：只在“非文章页面”（如首页、归档、分类页）加载这段代码 */ -}}
+{{- if not .IsPage -}}
+<script type="module">
+    // 引入 Waline 统计功能的轻量级接口
+    import { pageviewCount } from 'https://unpkg.com/@waline/client@3.8.0/dist/waline.js';
+
+    // 执行查数操作
+    pageviewCount({
+        // 自动读取你在 hugo.yaml 里配好的 serverURL
+        serverURL: '{{ .Site.Params.comments.waline.serverURL }}',
+        
+        // 指定要找哪个元素 (即 details.html 里加的那个 class)
+        selector: '.waline-pageview-count',
+        
+        // 重要：列表页只显示数字，不增加阅读量 (update: false)
+        update: false
+    });
+</script>
+{{- end -}}
