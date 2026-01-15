@@ -1,7 +1,5 @@
 // 显示语言和复制按钮
 const highlights = document.querySelectorAll('.article-content div.highlight');
-// const copyText = `📄拷贝`,
-//     copiedText = `已拷贝!`;
 
 highlights.forEach(highlight => {
     // 注释掉添加复制按钮的相关代码

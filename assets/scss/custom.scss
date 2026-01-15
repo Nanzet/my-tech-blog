@@ -568,29 +568,54 @@
 //代码复制按钮
 .article-content .copyCodeButton {
     position: absolute;
-    top: 10px;
-    right: 18px;
-    border-radius: 12px;
-    opacity: 1;
-    color: #5b87a9ad;
-    background: none;
-    border: none;
-    padding: 0;
+    // 调整位置：因为按钮变大了，稍微上移一点以保持垂直居中 (32px 的 Header)
+    top: 5px;
+    right: 10px;
+    // 核心改变：增加内边距，让按钮变大、变方 (上右下左)
+    padding: 4px 10px;
+    // 视觉：方框圆角 (6px 比较现代，想更圆润可改大)
+    border-radius: 6px;
+    // 配色：使用主题变量背景，自动适配暗黑模式
+    background-color: #ffffff;
+    border: 1px solid rgba(226, 230, 233, 0.2); // 加一个极淡的边框增加质感
+    color: #406f93;
     font-weight: 500;
+    font-size: 1.2rem; // 稍微控制下字体大小
+    cursor: pointer;
+    opacity: 1;
+    // 动画：添加丝滑过渡
+    transition: all 0.25s ease-in-out;
+    // 交互：鼠标悬浮效果
+    &:hover {
+        // 关键需求：悬浮阴影 (x偏移 y偏移 模糊度 颜色)
+        box-shadow: 0 4px 10px rgb(76, 143, 198);
+        // 稍微下浮 1px，增加按压前的立体感
+        transform: translateY(1px);
+        // 悬浮时加深颜色
+        color: #55bce8;
+        border-color: #55bce8;
+    }
+    // 点击时的按压效果
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
 }
 
+// 语言显示 (建议微调位置以对齐新按钮)
 .article-content .languageCodeButton {
     position: absolute;
     border: none;
-    top: 9px;
-    right: 69px;
+    // 微调 top 以和 Copy 按钮中心对齐
+    top: 10px;
+    right: 75px; // 稍微往左挪一点，避免撞到变大的 Copy 按钮
     border-radius: 12px;
     opacity: 1;
     padding: 0 5px;
     background: 0;
-    color: #ff9705;
+    color: #a7a4a2bc;
     font-family: lato;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
 }
 
 //--------------------------------------------------
