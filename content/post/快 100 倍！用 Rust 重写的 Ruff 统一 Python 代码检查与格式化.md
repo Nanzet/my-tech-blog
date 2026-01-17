@@ -1,12 +1,13 @@
 ---
 title: "快 100 倍！用 Rust 重写的 Ruff 统一 Python 代码检查与格式化"
 date: 2026-01-17T15:04:42+08:00
-slug: ""
+slug: "vscode-ruff-configuration"
 image: ""
 categories:
-    - 
+    - 技术
 tags:
-    - 
+    - vscode
+    - ruff
 draft: false
 ---
 ## 前言：受够了 Python 工具链的“战国时代"
