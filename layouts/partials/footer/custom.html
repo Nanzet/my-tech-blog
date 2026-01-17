@@ -19,27 +19,20 @@
                 
                 // 3. 创建按钮
                 const btn = document.createElement('button');
-                // 初始文案
                 btn.innerHTML = '<span>⇩</span> 展开代码';
                 
-                // 4. 绑定点击事件 (核心逻辑)
+                // 4. 绑定点击事件
                 btn.addEventListener('click', function() {
-                    // 检查当前是否处于折叠状态
                     const isCollapsed = block.classList.contains('collapsed');
     
                     if (isCollapsed) {
-                        // --- 执行展开 ---
                         block.classList.remove('collapsed');
-                        block.style.maxHeight = 'none'; // 移除高度限制
-                        btn.innerHTML = '<span>⇧</span> 收起代码'; // 修改文案
+                        block.style.maxHeight = 'none';
+                        btn.innerHTML = '<span>⇧</span> 收起代码';
                     } else {
-                        // --- 执行收起 ---
                         block.classList.add('collapsed');
-                        block.style.maxHeight = ''; // 恢复 CSS 里的高度限制
-                        btn.innerHTML = '<span>⇩</span> 展开代码'; // 恢复文案
-                        
-                        // 体验优化：收起时，自动滚动到代码块顶部
-                        // (否则页面会突然变短，用户可能找不到刚才看到哪了)
+                        block.style.maxHeight = ''; 
+                        btn.innerHTML = '<span>⇩</span> 展开代码';
                         block.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 });
@@ -51,11 +44,9 @@
         });
     });
 </script>
-<script src="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.js"
-    crossorigin="anonymous"></script>
-<link rel="stylesheet"
-    href="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.css"
-    crossorigin="anonymous" />
+
+<script src="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.css" crossorigin="anonymous" />
 <script>
     NProgress.start();
     document.addEventListener("readystatechange", () => {
@@ -63,29 +54,25 @@
         if (document.readyState === "complete") NProgress.done();
     });
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     mediumZoom('.article-content img', {
-      margin: 24,
+      margin: 0,          // ⚡️ 核心修改：改为 0 以修复偏移问题
       background: '#000',
       scrollOffset: 40,
     });
   });
 </script>
-{{- /* 逻辑判断：只在“非文章页面”（如首页、归档、分类页）和非 hugo server 本地调试时加载这段代码 */ -}}
+
 {{ if and (not .IsPage) (not hugo.IsServer) }}
 <script type="module">
-    // 引入 Waline 统计功能的轻量级接口
     import { pageviewCount } from 'https://unpkg.com/@waline/client@3.8.0/dist/waline.js';
 
-    // 执行查数操作
     pageviewCount({
-        // 自动读取你在 hugo.yaml 里配好的 serverURL
         serverURL: '{{ .Site.Params.comments.waline.serverURL }}',
-        // 指定要找哪个元素 (即 details.html 里加的那个 class)
         selector: '.waline-pageview-count',
-        // 重要：列表页只显示数字，不增加阅读量 (update: false)
         update: false
     });
 </script>

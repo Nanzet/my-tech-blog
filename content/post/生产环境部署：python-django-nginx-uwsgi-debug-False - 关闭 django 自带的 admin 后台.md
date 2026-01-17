@@ -57,7 +57,7 @@ server {
 
 ### 本地测试运行：[http://localhost:8088/](http://localhost:8088/)
 
-<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018214308.png" style="zoom:80%;" />
+<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018214308.png" class="about-img" />
 
 ## python3.7 安装 uwsgi
 
@@ -81,7 +81,7 @@ def application(env, start_response):
 
 `uwsgi --http :8001 --wsgi-file ./test.py`
 
-<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018214529.png" style="zoom:80%;" />
+<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018214529.png" class="about-img" />
 
 ### Tips:（以下内容仅作参考不做配置也可以，关闭服务时 ctrl+c 即可）
 
@@ -184,11 +184,11 @@ uwsgi --ini ./wj_uwsgi.ini
 
 ### 在浏览器测试访问：localhost:8099
 
-<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018215145.png" style="zoom:80%;" />
+<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018215145.png" class="about-img" />
 
 &ensp;uwsgi启动成功日志：
 
-<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018215253.png" style="zoom:80%;" />
+<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018215253.png" class="about-img" />
 
 ## 生产环境配置：Django debug=False+关闭django自带的admin后台
 
@@ -264,7 +264,7 @@ root@debian:/home/mycode/webshellCheck# python3 manage.py collectstatic
 
 `chmod 777 staticfiles -R`
 
-<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018222754.png" style="zoom:60%;" />
+<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201018222754.png" class="about-img" />
 
 （3）修改nginx配置中的静态文件路径，将该行 `alias /home/mycode/webshellCheck/frontend/dist/static;`更改为：
 
@@ -272,4 +272,4 @@ root@debian:/home/mycode/webshellCheck# python3 manage.py collectstatic
 
 &ensp;重启nginx，启动uwsgi，在浏览器测试运行成功！
 
-&ensp;尝试在浏览器输入 `localhost:8090/不存在的路径`不会出现暴露部分路径的debug信息，尝试输入 `localhost:8090/admin`提示不存在。✌️😆✌️
+&ensp;尝试在浏览器输入 `localhost:8090/不存在的路径`不会出现暴露部分路径的debug信息，尝试输入 `localhost:8090/admin`提示不存在 😆 🎉。

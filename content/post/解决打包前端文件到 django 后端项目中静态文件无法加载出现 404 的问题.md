@@ -36,16 +36,16 @@ module.exports = {
 
 &ensp;我生成的dist打包文件目录如下：
 
-<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201011213840.png" style="zoom:67%;" />
+<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201011213840.png" class="about-img" />
 
 ### 配置 settings.py
 
-![](https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201011212346.png)
+<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201011212346.png" class="about-img" />
 
 ### django 项目根目录下的 urls.py 的加载模板设置
 
-![](https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201011212530.png)
+<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201011212530.png" class="about-img" />
 
 ### 运行 django 服务成功解决
 
-<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201011214139.png" style="zoom:80%;" />
+<img src="https://cdn.jsdelivr.net/gh/Nanzet/nanzet-imgs/images/20201011214139.png" class="about-img" />
