@@ -11,7 +11,7 @@ draft: false
 ---
 考虑到这是**个人独立项目-答题系统**，这套规范在保持“行业标准（Conventional Commits）”专业性的同时，去掉了企业级开发中繁琐的流程（如必须关联 Jira ID 等），专注于清晰和实用 。
 
-建议将此内容保存在项目根目录的 `CONTRIBUTING.md `或 `docs/GUIDE.md` 中，作为备忘。
+建议将此内容保存在项目根目录的 `CONTRIBUTING.md`或 `docs/GUIDE.md` 中，作为备忘。
 
 ---
 
@@ -111,7 +111,7 @@ draft: false
 
 插件会自动帮你生成标准的：`feat(etl): 增加图片上传功能`。
 
-![1769525248381](image/个人独立项目Git提交规范指南/1769525248381.png)
+<img src="/image/个人项目Git提交规范和vscode插件/1769525248381.png" class="about-img">
 
 ## VSCode **Conventional Commits 插件配置说明**
 
