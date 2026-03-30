@@ -27,7 +27,7 @@ services:
         shortname: "hugo-theme-stack"
     # GA Tracking ID
     googleAnalytics:
-        id:
+        id: ""
 
 pagination:
     pagerSize: 10
