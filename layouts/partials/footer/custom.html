@@ -66,14 +66,64 @@
   });
 </script>
 
-{{ if and (not .IsPage) (not hugo.IsServer) }}
+{{ if .Site.Params.comments.enabled }}
 <script type="module">
-    import { pageviewCount } from 'https://unpkg.com/@waline/client@3.8.0/dist/waline.js';
+    const pageviewNodes = Array.from(document.querySelectorAll('.waline-pageview-count'));
 
-    pageviewCount({
-        serverURL: '{{ .Site.Params.comments.waline.serverURL }}',
-        selector: '.waline-pageview-count',
-        update: false
-    });
+    if (pageviewNodes.length > 0) {
+        const walineModuleURL = '{{ "vendor/waline/waline.3.8.0.js" | relURL }}';
+        const startAt = performance.now();
+        const pendingNodes = new Set(
+            pageviewNodes.filter((node) => node.textContent.trim() === 'Loading...')
+        );
+
+        const finishIfReady = () => {
+            for (const node of Array.from(pendingNodes)) {
+                if (node.textContent.trim() !== 'Loading...') {
+                    pendingNodes.delete(node);
+                }
+            }
+
+            if (pendingNodes.size === 0) {
+                console.info(
+                    `[Waline] pageview loaded in ${Math.round(performance.now() - startAt)}ms for ${pageviewNodes.length} item(s)`
+                );
+                return true;
+            }
+
+            return false;
+        };
+
+        if (!finishIfReady()) {
+            const observer = new MutationObserver(() => {
+                if (finishIfReady()) {
+                    observer.disconnect();
+                }
+            });
+
+            pageviewNodes.forEach((node) => {
+                observer.observe(node, {
+                    childList: true,
+                    characterData: true,
+                    subtree: true,
+                });
+            });
+
+            window.setTimeout(() => {
+                observer.disconnect();
+                console.warn(
+                    `[Waline] pageview still pending after ${Math.round(performance.now() - startAt)}ms`
+                );
+            }, 10000);
+        }
+
+        const { pageviewCount } = await import(walineModuleURL);
+
+        pageviewCount({
+            serverURL: '{{ .Site.Params.comments.waline.serverURL }}',
+            selector: '.waline-pageview-count',
+            update: {{ if and .IsPage (not hugo.IsServer) }}true{{ else }}false{{ end }}
+        });
+    }
 </script>
 {{- end -}}
