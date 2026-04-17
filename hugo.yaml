@@ -19,7 +19,7 @@ languages:
         weight: 2
         params:
             sidebar:
-                subtitle: 淡定~
+                subtitle: 勇敢的人先享受世界
 
 services:
     # Change it to your Disqus shortname before using
