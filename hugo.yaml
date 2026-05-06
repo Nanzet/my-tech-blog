@@ -1,7 +1,7 @@
 baseurl: https://nanzet-blog.pages.dev/
 languageCode: zh-cn
 theme: hugo-theme-stack
-title: ☃ 菠萝吹雪
+title: ☃ pineapple
 copyright: Nanzet
 
 # Theme i18n support
@@ -19,7 +19,7 @@ languages:
         weight: 2
         params:
             sidebar:
-                subtitle: 勇敢的人先享受世界
+                subtitle:  淡定~
 
 services:
     # Change it to your Disqus shortname before using
