@@ -10,12 +10,70 @@
         </div>
 
         <script>
-            document.currentScript
-                .closest('.toc-widget')
-                .querySelectorAll('#TableOfContents a')
-                .forEach((link) => {
-                    link.title = link.textContent.trim();
+            {
+                const toc = document.currentScript.closest('.toc-widget');
+                const tooltip = document.querySelector('.toc-tooltip') || document.createElement('div');
+
+                tooltip.className = 'toc-tooltip';
+                tooltip.hidden = true;
+                document.body.appendChild(tooltip);
+
+                const hideTooltip = () => {
+                    tooltip.hidden = true;
+                };
+
+                const showTooltip = (link) => {
+                    const text = link.querySelector(':scope > .toc-link-text');
+                    const isTruncated = text && text.scrollWidth > text.clientWidth;
+
+                    if (!isTruncated) {
+                        hideTooltip();
+                        return;
+                    }
+
+                    tooltip.textContent = link.dataset.title;
+                    tooltip.hidden = false;
+
+                    const linkRect = link.getBoundingClientRect();
+                    const tooltipRect = tooltip.getBoundingClientRect();
+                    const gap = 6;
+                    const left = Math.min(
+                        Math.max(linkRect.left + 12, 8),
+                        window.innerWidth - tooltipRect.width - 8
+                    );
+                    const bottomTop = linkRect.bottom + gap;
+                    const top = bottomTop + tooltipRect.height <= window.innerHeight - 8
+                        ? bottomTop
+                        : Math.max(linkRect.top - tooltipRect.height - gap, 8);
+
+                    tooltip.style.left = `${left}px`;
+                    tooltip.style.top = `${top}px`;
+                };
+
+                toc.querySelectorAll('#TableOfContents a').forEach((link) => {
+                    link.dataset.title = link.textContent.trim();
+
+                    if (!link.querySelector(':scope > .toc-link-text')) {
+                        const text = document.createElement('span');
+                        text.className = 'toc-link-text';
+
+                        while (link.firstChild) {
+                            text.appendChild(link.firstChild);
+                        }
+
+                        link.appendChild(text);
+                    }
+
+                    link.addEventListener('mouseenter', () => showTooltip(link));
+                    link.addEventListener('focus', () => showTooltip(link));
+                    link.addEventListener('mouseleave', hideTooltip);
+                    link.addEventListener('blur', hideTooltip);
                 });
+
+                toc.querySelector('#TableOfContents')?.addEventListener('scroll', hideTooltip);
+                window.addEventListener('scroll', hideTooltip, { passive: true });
+                window.addEventListener('resize', hideTooltip);
+            }
         </script>
     </section>
 {{ end }}

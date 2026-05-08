@@ -394,6 +394,7 @@
         li {
             margin: 0 !important;
             padding: 0 !important;
+            position: relative;
         }
 
         li + li {
@@ -410,13 +411,33 @@
             border-left: 2px solid transparent;
             border-radius: 0 6px 6px 0;
             color: inherit;
-            display: block;
+            display: flex !important;
+            align-items: baseline;
             margin-left: -14px;
-            overflow: hidden;
+            overflow: visible;
             padding: 3px 8px 3px 12px;
             text-decoration: none;
-            text-overflow: ellipsis;
             white-space: nowrap;
+            position: relative;
+
+            &::before {
+                flex: 0 0 auto;
+            }
+
+            .toc-link-text {
+                display: block;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .toc-link-text,
+            code {
+                position: relative;
+                z-index: 1;
+            }
 
             &:hover {
                 color: var(--card-text-color-main);
@@ -437,6 +458,29 @@
     border-color: rgba(255, 255, 255, 0.06);
     background: color-mix(in srgb, var(--card-background) 42%, transparent);
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.toc-tooltip {
+    position: fixed;
+    z-index: 9999;
+    max-width: 360px;
+    width: max-content;
+    padding: 6px 9px;
+    border: 1px solid color-mix(in srgb, var(--card-separator-color) 65%, transparent);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--card-background) 94%, transparent);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+    color: var(--card-text-color-main);
+    font-size: 1.24rem;
+    font-weight: 500;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+    white-space: normal;
+}
+
+[data-scheme="dark"] .toc-tooltip {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
 }
 
 // .widget--toc a {
