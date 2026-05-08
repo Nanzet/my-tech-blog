@@ -315,13 +315,128 @@
 //     flex-basis: 300px !important;
 // }
 
-/* 调整目录树的文字样式 */
-.widget--toc {
-    /* 稍微调小字体，默认可能是 1rem */
-    font-size: 1.4rem !important;
+/* 文章页目录：轻量 sticky 侧栏，只保留 H2/H3 层级 */
+.article-page .right-sidebar.sticky {
+    top: var(--main-top-padding);
+    align-self: flex-start;
+    width: clamp(280px, 18.5vw, 360px);
+    max-width: clamp(280px, 18.5vw, 360px);
+    flex-basis: clamp(280px, 18.5vw, 360px);
+}
 
-    /* 调整行间距，让它看起来不那么挤 */
-    line-height: 1.2 !important;
+.toc-widget {
+    gap: 10px;
+    padding: 12px 10px 12px 12px;
+    border: 1px solid rgba(127, 127, 127, 0.08);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--card-background) 52%, transparent);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.025);
+    backdrop-filter: blur(14px) saturate(1.08);
+    -webkit-backdrop-filter: blur(14px) saturate(1.08);
+
+    .widget-icon {
+        display: none;
+    }
+
+    .widget-title {
+        color: var(--card-text-color-secondary);
+        font-size: 1.35rem;
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: 0;
+        margin: 0 0 2px;
+    }
+}
+
+.widget--toc {
+    background: transparent !important;
+    border-left: 1px solid color-mix(in srgb, var(--card-separator-color) 58%, transparent);
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: var(--card-text-color-secondary);
+    font-size: 1.45rem !important; // 目录文字大小
+    line-height: 1.55 !important; // 目录行距
+    overflow: visible !important;
+    padding-left: 13px;
+
+    #TableOfContents {
+        max-height: calc(100vh - 190px);
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding-right: 8px;
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+
+        &:hover {
+            scrollbar-color: color-mix(in srgb, var(--card-text-color-tertiary) 35%, transparent) transparent;
+        }
+
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 999px;
+        }
+
+        &:hover::-webkit-scrollbar-thumb {
+            background: color-mix(in srgb, var(--card-text-color-tertiary) 28%, transparent);
+        }
+
+        ul,
+        ol {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        li + li {
+            margin-top: 10px !important;
+        }
+
+        li ul,
+        li ol {
+            margin-top: 10px;
+            padding-left: 16px;
+        }
+
+        a {
+            border-left: 2px solid transparent;
+            border-radius: 0 6px 6px 0;
+            color: inherit;
+            display: block;
+            margin-left: -14px;
+            overflow: hidden;
+            padding: 3px 8px 3px 12px;
+            text-decoration: none;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &:hover {
+                color: var(--card-text-color-main);
+                background: color-mix(in srgb, var(--card-background) 34%, transparent);
+            }
+        }
+
+        li.active-class > a {
+            border-left-color: var(--accent-color);
+            color: var(--card-text-color-main);
+            font-weight: 650;
+            background: color-mix(in srgb, var(--accent-color) 5%, transparent);
+        }
+    }
+}
+
+[data-scheme="dark"] .toc-widget {
+    border-color: rgba(255, 255, 255, 0.06);
+    background: color-mix(in srgb, var(--card-background) 42%, transparent);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
 }
 
 // .widget--toc a {
