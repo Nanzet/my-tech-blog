@@ -1,7 +1,7 @@
 ---
 title: "LangChain Models 介绍"
 date: 2026-05-08T22:11:17+08:00
-slug: "angchain-models-introduction"
+slug: "langchain-models-introduction"
 image: ""
 categories:
     - 技术
