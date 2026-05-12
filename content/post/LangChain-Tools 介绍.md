@@ -10,18 +10,18 @@ tags:
 draft: false
 ---
 
-## <font style="color:rgb(31, 31, 31);">💡</font><font style="color:rgb(31, 31, 31);"> 一句话核心概念</font>
+## 💡 一句话核心概念
 
-<strong><font style="color:rgb(31, 31, 31);">Tools 模块是连接大模型“大脑”和外部世界“手脚”的标准化网关。</font></strong><font style="color:rgb(31, 31, 31);"> 它本质上是一套强类型的接口定义与封装规范，将后端的 Python 函数连同其参数类型、注释自动转换为大模型能看懂的 JSON Schema，解决了大模型无法获取实时数据、无法执行系统操作（如查库、调用 API）的核心痛点。</font>
+**Tools 模块是连接大模型“大脑”和外部世界“手脚”的标准化网关。** 它本质上是一套强类型的接口定义与封装规范，将后端的 Python 函数连同其参数类型、注释自动转换为大模型能看懂的 JSON Schema，解决了大模型无法获取实时数据、无法执行系统操作（如查库、调用 API）的核心痛点。
 
 ---
 
-## <font style="color:rgb(31, 31, 31);">常用核心 API 及类名</font>
+## 常用核心 API 及类名
 
-### <font style="color:rgb(31, 31, 31);"></font><font style="color:#DF2A3F;">`@tool`</font><font style="color:rgb(31, 31, 31);"> (装饰器)</font>
+### `@tool` (装饰器)
 
-+ <strong><font style="color:rgb(31, 31, 31);">作用</font></strong><font style="color:rgb(31, 31, 31);">：最基础、最常用的 API。它通过</font><u><font style="color:rgb(31, 31, 31);">反射（Reflection）机制</font></u><font style="color:rgb(31, 31, 31);">，提取 Python 函数的 </font><strong><font style="color:rgb(31, 31, 31);">类型注解 (Type Hints)</font></strong><font style="color:rgb(31, 31, 31);"> 和 </font><strong><font style="color:rgb(31, 31, 31);">Docstring</font></strong><font style="color:rgb(31, 31, 31);">，自动生成大模型所需的接口文档 Schema。</font>
-+ <strong><font style="color:rgb(31, 31, 31);">工程视角</font></strong><font style="color:rgb(31, 31, 31);">：这就像是你写后端 Controller 时加的 </font><font style="color:rgb(68, 71, 70);">`@RequestMapping`</font><font style="color:rgb(31, 31, 31);"> 或 Swagger 注解。</font>
++ <strong>作用</strong>：最基础、最常用的 API。它通过<u>反射（Reflection）机制</u>，提取 Python 函数的 **类型注解 (Type Hints)** 和 <strong>Docstring</strong>，自动生成大模型所需的接口文档 Schema。
++ <strong>工程视角</strong>：这就像是你写后端 Controller 时加的 `@RequestMapping` 或 Swagger 注解。
 
 ```python
 import os
@@ -49,10 +49,10 @@ if __name__ == "__main__":
     # 输出示例: [{'name': 'get_user_balance', 'args': {'user_id': '9527'}, 'id': 'call_xxx', 'type': 'tool_call'}]
 ```
 
-### <font style="color:rgb(31, 31, 31);"></font><font style="color:#DF2A3F;">`ToolNode`</font><font style="color:rgb(31, 31, 31);"> (属于 LangGraph 预置组件)</font>
+### `ToolNode` (属于 LangGraph 预置组件)
 
-+ <strong><font style="color:rgb(31, 31, 31);">作用</font></strong><font style="color:rgb(31, 31, 31);">：它是 LangGraph 状态机中专门负责“执行工具”的节点。当大模型下发了一堆</font><u><font style="color:rgb(31, 31, 31);">并发的工具调用</font></u><font style="color:rgb(31, 31, 31);">指令时，</font><font style="color:rgb(68, 71, 70);">`ToolNode`</font><font style="color:rgb(31, 31, 31);"> 会</font><u><font style="color:rgb(31, 31, 31);">负责批量调度执行你的 Python 函数，并自动将结果包装回 </font></u><u><font style="color:rgb(68, 71, 70);">`ToolMessage`</font></u><u><font style="color:rgb(31, 31, 31);"> 喂给模型</font></u><font style="color:rgb(31, 31, 31);">。</font>
-+ <strong><font style="color:rgb(31, 31, 31);">参数</font></strong><font style="color:rgb(31, 31, 31);">：</font><font style="color:#DF2A3F;">`handle_tool_errors=True`</font><font style="color:rgb(31, 31, 31);"> (非常核心，，开启后遇到报错不崩溃，而是把报错信息返给大模型让其纠错)。</font>
++ <strong>作用</strong>：它是 LangGraph 状态机中专门负责“执行工具”的节点。当大模型下发了一堆<u>并发的工具调用</u>指令时，`ToolNode` 会<u>负责批量调度执行你的 Python 函数，并自动将结果包装回 </u><u>`ToolMessage`</u><u> 喂给模型</u>。
++ <strong>参数</strong>：`handle_tool_errors=True` (非常核心，，开启后遇到报错不崩溃，而是把报错信息返给大模型让其纠错)。
 
 ```python
 from langchain_core.messages import AIMessage
@@ -88,10 +88,10 @@ if __name__ == "__main__":
         print(f"ToolNode 自动封装的回调结果: {msg.content} (对应调用ID: {msg.tool_call_id})")
 ```
 
-### <font style="color:rgb(31, 31, 31);"></font><font style="color:#DF2A3F;">`ToolRuntime`</font><font style="color:rgb(31, 31, 31);"> (类型提示符)</font>
+### `ToolRuntime` (类型提示符)
 
-+ <strong><font style="color:rgb(31, 31, 31);">作用</font></strong><font style="color:rgb(31, 31, 31);">：</font><font style="color:#DF2A3F;">工具的</font><strong><font style="color:#DF2A3F;">“运行时上下文”</font></strong><font style="color:rgb(31, 31, 31);">。如果你的工具仅仅是一个纯函数，它无法知道当前的会话 ID 或全局变量。</font><u><font style="color:rgb(31, 31, 31);">将 </font></u><u><font style="color:rgb(68, 71, 70);">`ToolRuntime`</font></u><u><font style="color:rgb(31, 31, 31);"> 作为参数注入，工具就能像中间件一样，读取全局状态（State）、长效记忆（Store）甚至是执行环境（Session Info）</font></u><font style="color:rgb(31, 31, 31);">。</font>
-+ <strong><font style="color:rgb(31, 31, 31);">注意</font></strong><font style="color:rgb(31, 31, 31);">：这个参数对大模型是</font><strong><font style="color:rgb(31, 31, 31);">隐藏的</font></strong><font style="color:rgb(31, 31, 31);">，只有你的后端代码能看见。</font>
++ <strong>作用</strong>：工具的<strong>“运行时上下文”</strong>。如果你的工具仅仅是一个纯函数，它无法知道当前的会话 ID 或全局变量。<u>将 </u><u>`ToolRuntime`</u><u> 作为参数注入，工具就能像中间件一样，读取全局状态（State）、长效记忆（Store）甚至是执行环境（Session Info）</u>。
++ <strong>注意</strong>：这个参数对大模型是<strong>隐藏的</strong>，只有你的后端代码能看见。
 
 ```python
 from typing import Annotated, TypedDict
@@ -130,11 +130,11 @@ if __name__ == "__main__":
 
 ---
 
-## <font style="color:rgb(31, 31, 31);">文档中提到的其他 API 和类名</font>
+## 文档中提到的其他 API 和类名
 
-### <font style="color:rgb(31, 31, 31);"></font><font style="color:rgb(68, 71, 70);">`tools_condition`</font><font style="color:rgb(31, 31, 31);"> (预置路由函数)</font>
+### `tools_condition` (预置路由函数)
 
-+ <strong><font style="color:rgb(31, 31, 31);">作用</font></strong><font style="color:rgb(31, 31, 31);">：用在 LangGraph 的条件边（Conditional Edge）中。它本质上是一个 IF 语句：“如果大模型的回复中包含了工具调用指令，就走到 </font><font style="color:rgb(68, 71, 70);">`ToolNode`</font><font style="color:rgb(31, 31, 31);"> 节点；如果只是普通的聊天回复，就走到 </font><font style="color:rgb(68, 71, 70);">`END`</font><font style="color:rgb(31, 31, 31);"> 结束节点”。</font>
++ <strong>作用</strong>：用在 LangGraph 的条件边（Conditional Edge）中。它本质上是一个 IF 语句：“如果大模型的回复中包含了工具调用指令，就走到 `ToolNode` 节点；如果只是普通的聊天回复，就走到 `END` 结束节点”。
 
 ```python
 import os
@@ -179,9 +179,9 @@ if __name__ == "__main__":
         print("当前执行的节点:", event.keys())
 ```
 
-### <font style="color:rgb(31, 31, 31);"></font><font style="color:rgb(68, 71, 70);">`Command`</font>
+### `Command`
 
-+ <strong><font style="color:rgb(31, 31, 31);">作用</font></strong><font style="color:rgb(31, 31, 31);">：</font><u><font style="color:rgb(31, 31, 31);">状态修改指令</font></u><font style="color:rgb(31, 31, 31);">。传统上，工具返回的是字符串（给大模型看的）。如果你希望工具在后端偷偷修改整个系统的状态（比如把当前语言切换为英语，或者直接中断会话），工具可以返回一个 </font><font style="color:rgb(68, 71, 70);">`Command`</font><font style="color:rgb(31, 31, 31);"> 对象。</font>
++ <strong>作用</strong>：<u>状态修改指令</u>。传统上，工具返回的是字符串（给大模型看的）。如果你希望工具在后端偷偷修改整个系统的状态（比如把当前语言切换为英语，或者直接中断会话），工具可以返回一个 `Command` 对象。
 
 ```python
 from typing import TypedDict
@@ -212,17 +212,17 @@ if __name__ == "__main__":
     print("触发的 State 状态更新为:", result)
 ```
 
-### <font style="color:rgb(31, 31, 31);"></font><font style="color:rgb(68, 71, 70);">`args_schema`</font><font style="color:rgb(31, 31, 31);"> (使用 Pydantic BaseModel)</font>
+### `args_schema` (使用 Pydantic BaseModel)
 
-+ <strong><font style="color:rgb(31, 31, 31);">作用</font></strong><font style="color:rgb(31, 31, 31);">：对于复杂的后端接口，普通的类型注解不够用。你可以</font><u><font style="color:rgb(31, 31, 31);">传入 Pydantic 模型来做极其严格的入参校验</font></u><font style="color:rgb(31, 31, 31);">（比如限制字符串长度、枚举值）。</font>
++ <strong>作用</strong>：对于复杂的后端接口，普通的类型注解不够用。你可以<u>传入 Pydantic 模型来做极其严格的入参校验</u>（比如限制字符串长度、枚举值）。
 
 ---
 
-## <font style="color:rgb(31, 31, 31);">极简代码脚手架</font>
+## 极简代码脚手架
 
-<font style="color:rgb(31, 31, 31);">这段代码展示了如何严谨地定义一个工具，并将其绑定到模型上。这是后端工程师写 Agent 最核心的日常操作。</font>
+这段代码展示了如何严谨地定义一个工具，并将其绑定到模型上。这是后端工程师写 Agent 最核心的日常操作。
 
-<strong><font style="color:rgb(31, 31, 31);">tool_definition_and_usage.py：</font></strong>
+**tool_definition_and_usage.py：**
 
 ```python
 #!/usr/bin/env python3
@@ -270,40 +270,32 @@ print(response.tool_calls)
 
 ---
 
-## <font style="color:rgb(31, 31, 31);">常见踩坑与高频面试点（高级研发视角）</font>
+## 常见踩坑与高频面试点（高级研发视角）
 
-<font style="color:rgb(31, 31, 31);">针对多年经验的后端，面试官在 Tool 这一块一定会深挖</font><strong><font style="color:#DF2A3F;">异常处理、安全性和稳定性</font></strong><font style="color:rgb(31, 31, 31);">：</font>
+针对多年经验的后端，面试官在 Tool 这一块一定会深挖<strong>异常处理、安全性和稳定性</strong>：
 
-### <font style="color:rgb(31, 31, 31);">高频踩坑：大模型瞎传参数（幻觉）引发后端 Crash</font>
+### 高频踩坑：大模型瞎传参数（幻觉）引发后端 Crash
 
-+ <strong><font style="color:rgb(31, 31, 31);">现象</font></strong><font style="color:rgb(31, 31, 31);">：大模型偶尔会无视你的类型提示，比如你要求传 </font><font style="color:rgb(68, 71, 70);">`int`</font><font style="color:rgb(31, 31, 31);">，它偏偏传个 </font><font style="color:rgb(68, 71, 70);">`"three"`</font><font style="color:rgb(31, 31, 31);">；或者传了你根本没定义的参数。如果不做处理，你的 Python 函数直接抛出 Exception，整个 Agent 进程崩溃。</font>
-+ <strong><font style="color:rgb(31, 31, 31);">面试官问</font></strong><font style="color:rgb(31, 31, 31);">：“</font><font style="color:#DF2A3F;">如何保证大模型调用工具时的稳定性？</font><font style="color:rgb(31, 31, 31);">”</font>
-+ <strong><font style="color:rgb(31, 31, 31);">工程对策</font></strong><font style="color:rgb(31, 31, 31);">：</font>
-    1. <font style="color:rgb(31, 31, 31);">必须使用 Pydantic (</font><font style="color:rgb(68, 71, 70);">`args_schema`</font><font style="color:rgb(31, 31, 31);">) 做强制拦截。</font>
-    2. <font style="color:rgb(31, 31, 31);">使用 </font><font style="color:rgb(68, 71, 70);">`ToolNode(tools, handle_tool_errors=True)`</font><font style="color:rgb(31, 31, 31);">。</font><font style="color:rgb(31, 31, 31);background-color:#FBDE28;">当工具抛出异常时，这个参数会将其拦截，并把错误堆栈（Stack Trace）当做字符串包装在 </font><font style="color:rgb(68, 71, 70);background-color:#FBDE28;">`ToolMessage`</font><font style="color:rgb(31, 31, 31);background-color:#FBDE28;"> 里还给大模型，让大模型“知道自己错了，自己换个参数重试”</font><font style="color:rgb(31, 31, 31);">。</font>
++ <strong>现象</strong>：大模型偶尔会无视你的类型提示，比如你要求传 `int`，它偏偏传个 `"three"`；或者传了你根本没定义的参数。如果不做处理，你的 Python 函数直接抛出 Exception，整个 Agent 进程崩溃。
++ <strong>面试官问</strong>：“如何保证大模型调用工具时的稳定性？”
++ <strong>工程对策</strong>：
+    1. 必须使用 Pydantic (`args_schema`) 做强制拦截。
+    2. 使用 `ToolNode(tools, handle_tool_errors=True)`。<font style="background-color:#FBDE28;">当工具抛出异常时，这个参数会将其拦截，并把错误堆栈（Stack Trace）当做字符串包装在 </font><font style="background-color:#FBDE28;">`ToolMessage`</font><font style="background-color:#FBDE28;"> 里还给大模型，让大模型“知道自己错了，自己换个参数重试”</font>。
 
-<font style="color:rgb(31, 31, 31);"></font>
+### 安全与越权（Prompt 注入攻击）
 
-### <font style="color:rgb(31, 31, 31);">安全与越权（Prompt 注入攻击）</font>
++ <strong>面试官问</strong>：“如果你写了一个执行 SQL 的 Tool，如何防止用户通过聊天输入进行 Prompt 注入，让大模型执行 `DROP TABLE`？”
++ <strong>工程对策</strong>：
+  + <strong>绝不能信任大模型的输入</strong>。Tool 的内部必须像传统的对外 Web API 一样，做严格的权限校验（利用 `ToolRuntime` 获取当前 `user_id` 判断权限）。
+  + 遵循<strong>最小权限原则</strong>，数据库查询 Tool 绑定的账号只能有只读权限。
+  + 对于敏感操作（如付款、删除），在 Tool 执行前必须引入 Human-in-the-loop（人类确认机制）。
 
-+ <strong><font style="color:rgb(31, 31, 31);">面试官问</font></strong><font style="color:rgb(31, 31, 31);">：“</font><font style="color:#DF2A3F;">如果你写了一个执行 SQL 的 Tool，如何防止用户通过聊天输入进行 Prompt 注入，让大模型执行 </font><font style="color:#DF2A3F;">`DROP TABLE`</font><font style="color:rgb(31, 31, 31);">？”</font>
-+ <strong><font style="color:rgb(31, 31, 31);">工程对策</font></strong><font style="color:rgb(31, 31, 31);">：</font>
-  + <strong><font style="color:rgb(31, 31, 31);">绝不能信任大模型的输入</font></strong><font style="color:rgb(31, 31, 31);">。Tool 的内部必须像传统的对外 Web API 一样，做严格的权限校验（利用 </font><font style="color:rgb(68, 71, 70);">`ToolRuntime`</font><font style="color:rgb(31, 31, 31);"> 获取当前 </font><font style="color:rgb(68, 71, 70);">`user_id`</font><font style="color:rgb(31, 31, 31);"> 判断权限）。</font>
-  + <font style="color:rgb(31, 31, 31);">遵循</font><strong><font style="color:rgb(31, 31, 31);">最小权限原则</font></strong><font style="color:rgb(31, 31, 31);">，数据库查询 Tool 绑定的账号只能有只读权限。</font>
-  + <font style="color:rgb(31, 31, 31);">对于敏感操作（如付款、删除），在 Tool 执行前必须引入 Human-in-the-loop（人类确认机制）。</font>
+### 性能踩坑：Tool 描述写的太随意
 
-<font style="color:rgb(31, 31, 31);"></font>
++ <strong>痛点</strong>：如果不写 Docstring，或者写得很简略，大模型会不知道何时该用这个工具，或者频繁误调用。
++ <strong>对策</strong>：Tool 的注释不仅仅是给程序员看的，它是<strong>大模型决策的核心依据</strong>。遇到复杂的 Tool，需要在 Docstring 中写明 **“When to use (何时使用)”** 和 <strong>“Do NOT use when (何时禁止使用)”</strong>。
 
-### <font style="color:rgb(31, 31, 31);">性能踩坑：Tool 描述写的太随意</font>
+### 长耗时任务的流式返回
 
-+ <strong><font style="color:rgb(31, 31, 31);">痛点</font></strong><font style="color:rgb(31, 31, 31);">：如果不写 Docstring，或者写得很简略，大模型会不知道何时该用这个工具，或者频繁误调用。</font>
-+ <strong><font style="color:rgb(31, 31, 31);">对策</font></strong><font style="color:rgb(31, 31, 31);">：Tool 的注释不仅仅是给程序员看的，它是</font><strong><font style="color:rgb(31, 31, 31);">大模型决策的核心依据</font></strong><font style="color:rgb(31, 31, 31);">。遇到复杂的 Tool，需要在 Docstring 中写明 </font><strong><font style="color:rgb(31, 31, 31);">“When to use (何时使用)”</font></strong><font style="color:rgb(31, 31, 31);"> 和 </font><strong><font style="color:rgb(31, 31, 31);">“Do NOT use when (何时禁止使用)”</font></strong><font style="color:rgb(31, 31, 31);">。</font>
-
-<font style="color:rgb(31, 31, 31);"></font>
-
-### <font style="color:rgb(31, 31, 31);">长耗时任务的流式返回</font>
-
-+ <strong><font style="color:rgb(31, 31, 31);">面试官问</font></strong><font style="color:rgb(31, 31, 31);">：“</font><font style="color:#DF2A3F;">如果我的 Tool 是去爬虫，耗时 30 秒，前端用户干等着以为死机了怎么办？</font><font style="color:rgb(31, 31, 31);">”</font>
-+ <strong><font style="color:rgb(31, 31, 31);">工程对策</font></strong><font style="color:rgb(31, 31, 31);">：熟悉 </font><font style="color:#DF2A3F;">`ToolRuntime.stream_writer`</font><font style="color:rgb(31, 31, 31);">。在 Tool 执行的过程中，不断通过 </font><font style="color:rgb(68, 71, 70);">`writer("正在分析网页中...")`</font><font style="color:rgb(31, 31, 31);"> 向流中推送中间状态事件，前端 SSE 监听到后就可以展示给用户类似“搜索中...”的动态 UI。</font>
-
-<font style="color:rgb(31, 31, 31);"></font>
++ <strong>面试官问</strong>：“如果我的 Tool 是去爬虫，耗时 30 秒，前端用户干等着以为死机了怎么办？”
++ <strong>工程对策</strong>：熟悉 `ToolRuntime.stream_writer`。在 Tool 执行的过程中，不断通过 `writer("正在分析网页中...")` 向流中推送中间状态事件，前端 SSE 监听到后就可以展示给用户类似“搜索中...”的动态 UI。
