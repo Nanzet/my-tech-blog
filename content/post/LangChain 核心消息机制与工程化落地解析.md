@@ -1,7 +1,7 @@
 ---
 title: "LangChain 核心消息机制与工程化落地解析"
 date: 2026-05-23T15:37:15+08:00
-slug: ""
+slug: "langchain-messages-engineering-practice"
 image: ""
 categories:
     - 技术
