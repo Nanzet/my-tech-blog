@@ -19,7 +19,7 @@ languages:
         weight: 2
         params:
             sidebar:
-                subtitle:  淡定~
+                subtitle: 每天进步一点点~
 
 services:
     # Change it to your Disqus shortname before using
