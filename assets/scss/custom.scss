@@ -75,9 +75,78 @@
 
 // ---------------------------------------
 // 代码块基础样式修改
+/* 强制覆盖 Stack 主题默认的代码块背景色，适配 snazzy 的深色底 */
+html[data-scheme] .article-content {
+
+    /* 1. 外层容器保持深色背景 */
+    .highlight {
+        background-color: #282a36 !important;
+    }
+
+    /* 2. 核心修复：拦截所有可能产生超长的内部容器 (特别是 table) */
+    .highlight>.chroma,
+    .highlight>pre,
+    .highlight table {
+        /* <-- 关键添加：命中有行号的表格容器 */
+        background-color: transparent !important;
+        overflow-x: auto !important;
+        /* 超出部分开启横向滚动条 */
+        padding-bottom: 10px;
+        /* 给滚动条留出一点呼吸空间 */
+
+        /* ======================== */
+        /* 美化横向滚动条 (匹配暗色极客风格) */
+        /* ======================== */
+        scrollbar-width: thin;
+        /* 针对 Firefox */
+        scrollbar-color: #6272a4 transparent;
+        /* 紫灰色滚动条 + 透明轨道 */
+
+        &::-webkit-scrollbar {
+            height: 8px;
+            /* 滚动条厚度 */
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #6272a4;
+            /* Snazzy 主题经典的紫灰色 */
+            border-radius: 4px;
+            /* 滚动条圆角 */
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+            /* 轨道透明，融入代码块背景 */
+        }
+
+        &::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+    }
+
+    /* 3. 针对 Hugo 行号模式 (Table布局) 的致命修复 */
+    /* Table 默认会无限撑破外框，必须强制转为 block 才能把滚动限制在框内 */
+    .highlight table {
+        display: block !important;
+        width: 100% !important;
+        border-spacing: 0;
+        border-collapse: collapse;
+    }
+
+    /* 4. 防御性代码：防止带有行号的内部 pre 出现双重滚动条 */
+    .highlight table pre {
+        background-color: transparent !important;
+        overflow: visible !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+}
+
+/* 2. 修改原来的 .highlight */
 .highlight {
     max-width: 102% !important;
-    background-color: var(--pre-background-color);
+    // background-color: var(--pre-background-color); /* 注释掉这行，不再使用默认背景 */
     padding: var(--card-padding);
     position: relative;
     border-radius: 20px;
@@ -99,7 +168,6 @@
     pre {
         margin: initial;
         padding: 0;
-        margin: 0;
         width: auto;
     }
 }
@@ -788,6 +856,7 @@
 }
 
 /* 折叠时的底部渐变遮罩，营造"还有内容"的感觉 */
+/* 修改为渐变到 snazzy 的深色底 (#282a36)，让折叠边缘完美融入深色代码块 */
 .highlight.collapsed::after {
     content: "";
     position: absolute;
@@ -795,10 +864,9 @@
     left: 0;
     width: 100%;
     height: 80px;
-    /* 遮罩高度 */
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--card-background));
+    /* 注意这里：从透明，渐变到代码块的深色底 */
+    background: linear-gradient(to bottom, rgba(40, 42, 54, 0), #282a36);
     pointer-events: none;
-    /* 让鼠标事件穿透遮罩 */
     z-index: 9;
 }
 
@@ -813,20 +881,6 @@
     /* 改为 flex 以配合之前的居中样式 */
     align-items: center;
     justify-content: center;
-}
-
-/* 只有在"折叠状态"下，才显示底部的渐变遮罩 */
-/* 注意：.highlight.collapsed 才有 ::after */
-.highlight.collapsed::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 80px;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--card-background));
-    pointer-events: none;
-    z-index: 9;
 }
 
 /* ============================================

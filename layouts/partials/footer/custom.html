@@ -1,66 +1,71 @@
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // 设定阈值：超过 400px 就折叠
-        const MAX_HEIGHT = 400; 
-        
-        // 获取所有代码块
-        const codeBlocks = document.querySelectorAll('.highlight');
-    
-        codeBlocks.forEach(block => {
-            // 如果代码块高度超过阈值
-            if (block.offsetHeight > MAX_HEIGHT) {
-                
-                // 1. 初始状态：添加折叠类
-                block.classList.add('collapsed');
-    
-                // 2. 创建按钮容器
-                const btnDiv = document.createElement('div');
-                btnDiv.className = 'read-more-btn';
-                
-                // 3. 创建按钮
-                const btn = document.createElement('button');
-                btn.innerHTML = '<span>⇩</span> 展开代码';
-                
-                // 4. 绑定点击事件
-                btn.addEventListener('click', function() {
-                    const isCollapsed = block.classList.contains('collapsed');
-    
-                    if (isCollapsed) {
-                        block.classList.remove('collapsed');
-                        block.style.maxHeight = 'none';
-                        btn.innerHTML = '<span>⇧</span> 收起代码';
-                    } else {
-                        block.classList.add('collapsed');
-                        block.style.maxHeight = ''; 
-                        btn.innerHTML = '<span>⇩</span> 展开代码';
-                        block.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                });
-    
-                // 5. 插入按钮
-                btnDiv.appendChild(btn);
-                block.appendChild(btnDiv);
-            }
+  document.addEventListener("DOMContentLoaded", function () {
+    // 设定阈值：超过 400px 就折叠
+    const MAX_HEIGHT = 400;
+
+    // 获取所有代码块
+    const codeBlocks = document.querySelectorAll(".highlight");
+
+    codeBlocks.forEach((block) => {
+      // 如果代码块高度超过阈值
+      if (block.offsetHeight > MAX_HEIGHT) {
+        // 1. 初始状态：添加折叠类
+        block.classList.add("collapsed");
+
+        // 2. 创建按钮容器
+        const btnDiv = document.createElement("div");
+        btnDiv.className = "read-more-btn";
+
+        // 3. 创建按钮
+        const btn = document.createElement("button");
+        btn.innerHTML = "<span>⇩</span> 展开代码";
+
+        // 4. 绑定点击事件
+        btn.addEventListener("click", function () {
+          const isCollapsed = block.classList.contains("collapsed");
+
+          if (isCollapsed) {
+            block.classList.remove("collapsed");
+            block.style.maxHeight = "none";
+            btn.innerHTML = "<span>⇧</span> 收起代码";
+          } else {
+            block.classList.add("collapsed");
+            block.style.maxHeight = "";
+            btn.innerHTML = "<span>⇩</span> 展开代码";
+            block.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
         });
+
+        // 5. 插入按钮
+        btnDiv.appendChild(btn);
+        block.appendChild(btnDiv);
+      }
     });
+  });
 </script>
 
-<script src="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.css" crossorigin="anonymous" />
+<script
+    src="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.js"
+    crossorigin="anonymous"></script>
+<link
+    rel="stylesheet"
+    href="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.css"
+    crossorigin="anonymous" />
 <script>
-    NProgress.start();
-    document.addEventListener("readystatechange", () => {
-        if (document.readyState === "interactive") NProgress.inc(0.8);
-        if (document.readyState === "complete") NProgress.done();
-    });
+  NProgress.start();
+  document.addEventListener("readystatechange", () => {
+    if (document.readyState === "interactive") NProgress.inc(0.8);
+    if (document.readyState === "complete") NProgress.done();
+  });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    mediumZoom('.article-content img', {
-      margin: 0,          // ⚡️ 核心修改：改为 0 以修复偏移问题
-      background: '#000',
+  document.addEventListener("DOMContentLoaded", function () {
+    mediumZoom(".article-content img", {
+      margin: 0, // ⚡️ 核心修改：改为 0 以修复偏移问题
+      background: "#000",
       scrollOffset: 40,
     });
   });
@@ -68,62 +73,66 @@
 
 {{ if .Site.Params.comments.enabled }}
 <script type="module">
-    const pageviewNodes = Array.from(document.querySelectorAll('.waline-pageview-count'));
+  const pageviewNodes = Array.from(
+    document.querySelectorAll(".waline-pageview-count"),
+  );
 
-    if (pageviewNodes.length > 0) {
-        const walineModuleURL = '{{ "vendor/waline/waline.3.8.0.js" | relURL }}';
-        const startAt = performance.now();
-        const pendingNodes = new Set(
-            pageviewNodes.filter((node) => node.textContent.trim() === 'Loading...')
-        );
+  if (pageviewNodes.length > 0) {
+    const walineModuleURL = '{{ "vendor/waline/waline.3.8.0.js" | relURL }}';
+    const startAt = performance.now();
+    const pendingNodes = new Set(
+      pageviewNodes.filter((node) => node.textContent.trim() === "Loading..."),
+    );
 
-        const finishIfReady = () => {
-            for (const node of Array.from(pendingNodes)) {
-                if (node.textContent.trim() !== 'Loading...') {
-                    pendingNodes.delete(node);
-                }
-            }
-
-            if (pendingNodes.size === 0) {
-                console.info(
-                    `[Waline] pageview loaded in ${Math.round(performance.now() - startAt)}ms for ${pageviewNodes.length} item(s)`
-                );
-                return true;
-            }
-
-            return false;
-        };
-
-        if (!finishIfReady()) {
-            const observer = new MutationObserver(() => {
-                if (finishIfReady()) {
-                    observer.disconnect();
-                }
-            });
-
-            pageviewNodes.forEach((node) => {
-                observer.observe(node, {
-                    childList: true,
-                    characterData: true,
-                    subtree: true,
-                });
-            });
-
-            window.setTimeout(() => {
-                observer.disconnect();
-                console.warn(
-                    `[Waline] pageview still pending after ${Math.round(performance.now() - startAt)}ms`
-                );
-            }, 10000);
+    const finishIfReady = () => {
+      for (const node of Array.from(pendingNodes)) {
+        if (node.textContent.trim() !== "Loading...") {
+          pendingNodes.delete(node);
         }
+      }
 
-        const { pageviewCount } = await import(walineModuleURL);
+      if (pendingNodes.size === 0) {
+        console.info(
+          `[Waline] pageview loaded in ${Math.round(performance.now() - startAt)}ms for ${pageviewNodes.length} item(s)`,
+        );
+        return true;
+      }
 
-        pageviewCount({
-            serverURL: '{{ .Site.Params.comments.waline.serverURL }}',
-            selector: '.waline-pageview-count',
-            update: {{ if and .IsPage (not hugo.IsServer) }}true{{ else }}false{{ end }}
+      return false;
+    };
+
+    if (!finishIfReady()) {
+      const observer = new MutationObserver(() => {
+        if (finishIfReady()) {
+          observer.disconnect();
+        }
+      });
+
+      pageviewNodes.forEach((node) => {
+        observer.observe(node, {
+          childList: true,
+          characterData: true,
+          subtree: true,
         });
+      });
+
+      window.setTimeout(() => {
+        observer.disconnect();
+        console.warn(
+          `[Waline] pageview still pending after ${Math.round(performance.now() - startAt)}ms`,
+        );
+      }, 10000);
     }
+
+    const { pageviewCount } = await import(walineModuleURL);
+
+    pageviewCount({
+      serverURL: "{{ .Site.Params.comments.waline.serverURL }}",
+      selector: ".waline-pageview-count",
+      update:
+        "{{ if and .IsPage (not hugo.IsServer) }}true{{ else }}false{{ end }}" ===
+        "true",
+    });
+  }
 </script>
 {{- end -}}

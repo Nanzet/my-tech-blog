@@ -253,10 +253,13 @@ markup:
         ordered: true
         startLevel: 2
     highlight:
-        noClasses: false
+        # noClasses：是否使用内联 CSS 样式而不是外部 CSS 文件。默认值为 true 。要使用外部 CSS 文件，请将此值设置为 false ，
+        # 然后从命令行生成 CSS 文件：hugo gen chromastyles --style=monokai > syntax.css
+        noClasses: true # 关键：设为 true，让颜色直接写进 HTML
         codeFences: true
         guessSyntax: true
         lineNoStart: 1
         lineNos: true
         lineNumbersInTable: true
         tabWidth: 4
+        style: "base16-snazzy" # style 默认值为 monokai，预览所有样式：https://xyproto.github.io/splash/docs/all.html
