@@ -7,7 +7,25 @@
     const codeBlocks = document.querySelectorAll(".highlight");
 
     codeBlocks.forEach((block) => {
-      // 如果代码块高度超过阈值
+        
+      // ==========================================
+      // ⚡️ 新增部分：将 title 属性转换为可复制的真实 DOM
+      // ==========================================
+      const title = block.getAttribute("title");
+      if (title) {
+        // 创建真实的 div 元素
+        const filenameDiv = document.createElement("div");
+        filenameDiv.className = "code-filename";
+        filenameDiv.textContent = title;
+        // 插入到代码块中
+        block.appendChild(filenameDiv);
+        
+        // 移除原生 title 属性，防止鼠标悬停时出现多余的黑色提示框
+        block.removeAttribute("title"); 
+      }
+      // ==========================================
+
+      // 如果代码块高度超过阈值（下面的折叠逻辑保持不变）
       if (block.offsetHeight > MAX_HEIGHT) {
         // 1. 初始状态：添加折叠类
         block.classList.add("collapsed");
@@ -45,12 +63,12 @@
 </script>
 
 <script
-    src="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.js"
-    crossorigin="anonymous"></script>
+  src="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.js"
+  crossorigin="anonymous"></script>
 <link
-    rel="stylesheet"
-    href="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.css"
-    crossorigin="anonymous" />
+  rel="stylesheet"
+  href="https://npm.elemecdn.com/nprogress@0.2.0/nprogress.css"
+  crossorigin="anonymous" />
 <script>
   NProgress.start();
   document.addEventListener("readystatechange", () => {
@@ -60,7 +78,7 @@
 </script>
 
 <script
-    src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+  src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     mediumZoom(".article-content img", {

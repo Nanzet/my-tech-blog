@@ -10,10 +10,13 @@
     --section-separation: 20px;
     // 全局字体大小
     --article-font-size: 1.5rem;
-    // 行内代码背景色
-    --code-background-color: #f8f8f8;
-    // 行内代码前景色
-    --code-text-color: #e90000;
+
+    /* ⚡️ 行内代码颜色 - 语雀/Notion 风格 (日间模式) */
+    // 背景色：非常淡的浅灰色
+    --code-background-color: #f2f4f5;
+    // 前景色：深灰色（接近正文颜色，彻底去掉红色）
+    --code-text-color: #3b3e43;
+
     // 主题色 (Links, 按钮等)
     --accent: #007bff !important;
     // 网页背景色 (整体背景色)
@@ -26,10 +29,15 @@
     --text-color-dark: #1a1a1a !important;
 
     &[data-scheme="dark"] {
-        // 行内代码背景色
+        // 网页背景色
         --body-background: #1a1a1a !important;
-        // 行内代码前景色
-        --code-text-color: #e90000;
+
+        /* ⚡️ 行内代码颜色 - 语雀/Notion 风格 (夜间模式) */
+        // 背景色：半透明的极暗白色
+        --code-background-color: rgba(255, 255, 255, 0.08) !important;
+        // 前景色：柔和的浅灰色
+        --code-text-color: #d1d5db;
+
         // 卡片区域背景色（暗色模式下）
         --card-background: #2c2c2c !important;
         --accent: #5ab9ea !important;
@@ -233,6 +241,7 @@ html[data-scheme] .article-content {
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
 .img-row {
     display: flex;
     /* 图片间距，可调整 */
@@ -465,7 +474,7 @@ html[data-scheme] .article-content {
             position: relative;
         }
 
-        li + li {
+        li+li {
             margin-top: 10px !important;
         }
 
@@ -513,7 +522,7 @@ html[data-scheme] .article-content {
             }
         }
 
-        li.active-class > a {
+        li.active-class>a {
             border-left-color: var(--accent-color);
             color: var(--card-text-color-main);
             font-weight: 650;
@@ -777,10 +786,11 @@ html[data-scheme] .article-content {
 }
 
 //--------------------------------------------------
-// macOS 风格代码块
+// macOS 风格代码块 (分离背景与文件名)
 .article-content {
     .highlight:before {
         content: '';
+        /* ⚡️ 核心修改：清空 content，让它只负责画红绿灯背景 */
         display: block;
         background: url(/code-header.svg);
         height: 32px;
@@ -790,39 +800,58 @@ html[data-scheme] .article-content {
         margin-bottom: 5px;
         background-position: -1px 2px;
     }
+
+    /* 真实的 DOM 文件名节点样式 */
+    .highlight .code-filename {
+        position: absolute;
+        /* ⚡️ 核心修复：基于 padding 向下补偿 6px，去对齐 SVG 里面偏下的圆点 */
+        top: calc(var(--card-padding) - 6px);
+        /* ⚡️ 左侧避开红绿灯，稍微收紧一点到 55px */
+        left: calc(var(--card-padding) + 65px);
+
+        line-height: 32px;
+
+        color: #6272a4;
+        font-family: var(--font-family-monospace);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        z-index: 10;
+
+        max-width: calc(100% - 160px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: text;
+    }
 }
 
 //代码复制按钮
 .article-content .copyCodeButton {
     position: absolute;
-    // 调整位置：因为按钮变大了，稍微上移一点以保持垂直居中 (32px 的 Header)
-    top: 5px;
-    right: 10px;
-    // 核心改变：增加内边距，让按钮变大、变方 (上右下左)
+
+    /* ⚡️ 同步修复：按钮也向下补偿，加 8px 保证和文件名完美在同一水平线 */
+    top: calc(var(--card-padding) + 1px);
+    right: var(--card-padding);
+
     padding: 4px 10px;
-    // 视觉：方框圆角 (6px 比较现代，想更圆润可改大)
     border-radius: 6px;
-    // 配色：使用主题变量背景，自动适配暗黑模式
     background-color: #ffffff;
-    border: 1px solid rgba(226, 230, 233, 0.2); // 加一个极淡的边框增加质感
+    border: 1px solid rgba(226, 230, 233, 0.2);
     color: #406f93;
     font-weight: 500;
-    font-size: 1.2rem; // 稍微控制下字体大小
+    font-size: 1.2rem;
     cursor: pointer;
     opacity: 1;
-    // 动画：添加丝滑过渡
     transition: all 0.25s ease-in-out;
-    // 交互：鼠标悬浮效果
+
     &:hover {
-        // 关键需求：悬浮阴影 (x偏移 y偏移 模糊度 颜色)
         box-shadow: 0 4px 10px rgb(76, 143, 198);
-        // 稍微下浮 1px，增加按压前的立体感
         transform: translateY(1px);
-        // 悬浮时加深颜色
         color: #55bce8;
         border-color: #55bce8;
     }
-    // 点击时的按压效果
+
     &:active {
         transform: translateY(0);
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -834,8 +863,8 @@ html[data-scheme] .article-content {
     position: absolute;
     border: none;
     // 微调 top 以和 Copy 按钮中心对齐
-    top: 10px;
-    right: 75px; // 稍微往左挪一点，避免撞到变大的 Copy 按钮
+    top: calc(var(--card-padding) + 6px);
+    right: calc(var(--card-padding) + 60px); // 稍微往左挪一点，避免撞到变大的 Copy 按钮
     border-radius: 12px;
     opacity: 1;
     padding: 0 5px;
@@ -1059,4 +1088,36 @@ kbd {
 .hamburger.is-active .hamburger-inner::before,
 .hamburger.is-active .hamburger-inner::after {
     background: var(--accent) !important;
+}
+
+// ---------------------------------------
+// 优化文章正文里的行内代码形状 (语雀极简风格)
+.article-content code {
+    /* 左右加宽，上下收紧，形成好看的标签比例 */
+    padding: 0.15em 0.4em !important;
+    /* 微微的圆角 */
+    border-radius: 4.5px !important;
+    /* 字体稍微比正文小一点点 */
+    font-size: 0.85em !important;
+    /* 解决中英文混排时的上下跳动问题 */
+    vertical-align: baseline !important;
+    /* 语雀细节：加一个极淡的边框增加立体质感 */
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+[data-scheme="dark"] .article-content code {
+    /* 暗色模式下边框改为半透明白 */
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ⚠️ 必须彻底排除大代码块里的 code，避免搞坏行号和排版 */
+.article-content pre code,
+.highlight code {
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: inherit !important;
+    /* ⚡️ 核心修复 1：强制继承父级正常字体大小，防止代码缩小 */
+    vertical-align: inherit !important;
+    /* ⚡️ 核心修复 2：防止基线对齐导致行高错乱 */
 }
