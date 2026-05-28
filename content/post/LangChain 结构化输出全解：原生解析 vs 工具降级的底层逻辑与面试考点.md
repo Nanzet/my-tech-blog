@@ -7,6 +7,7 @@ categories:
     - 技术
 tags:
     - LangChain
+    - 结构化输出
 draft: false
 ---
 

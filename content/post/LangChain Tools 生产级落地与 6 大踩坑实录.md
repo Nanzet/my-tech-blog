@@ -1,5 +1,5 @@
 ---
-title: "拒绝玩具代码：LangChain Tools 生产级落地与 6 大踩坑实录"
+title: "LangChain Tools 生产级落地与 6 大踩坑实录"
 date: 2026-05-24T19:10:12+08:00
 slug: "langchain-tools-production-6-pitfalls"
 image: ""
@@ -7,6 +7,7 @@ categories:
     - 技术
 tags:
     -  LangChain
+    -  工具调用
 draft: false
 ---
 
