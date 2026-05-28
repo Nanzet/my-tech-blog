@@ -189,9 +189,7 @@ if __name__ == "__main__":
 
 下面是一份完整的代码，模拟了一次包含 System/Human/AI/Tool 四大消息类的标准交互流程，重点展示了 **Token 监控** 和 <strong>Artifact 数据隔离机制</strong>的工程应用。
 
-**`message_protocol_demo.py`**
-
-```python
+```python {title="message_protocol_demo.py"}
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
