@@ -29,9 +29,7 @@ Tools 的开发和使用围绕着函数装饰器、运行时参数对象以及�
   + <strong>Type Hints（类型提示）</strong>：<strong>强制要求</strong>。LangChain 根据类型提示生成 JSON Schema，告诉大模型必须传入什么格式的参数。
   + <strong>重载属性</strong>：可通过 @tool("custom_name", description="...") 显式覆盖默认的函数名和描述。工具命名强烈建议使用 snake_case（蛇形命名），以兼容所有模型厂商。
 
-`basic_tool.py`
-
-```python
+```python {title="basic_tool.py"}
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -62,9 +60,7 @@ if __name__ == "__main__":
 
 + <strong>BaseModel</strong>****<strong>&</strong>****<strong>Field</strong>：使用 Pydantic 的 BaseModel 定义输入类，利用 Field(description="...") 精确制导每个字段的约束，这是生产环境最标准的做法。
 
-`pydantic_tool.py`
-
-```python
+```python {title="pydantic_tool.py"}
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -144,9 +140,7 @@ if __name__ == "__main__":
 + `runtime.tool_call_id`：当前工具调用的全局唯一 ID。
 + `runtime.execution_info` & `runtime.server_info`：获取线程、重试次数以及 LangGraph Server 的元数据信息。
 
-`runtime_tool.py`
-
-```python
+```python {title="runtime_tool.py"}
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -208,9 +202,7 @@ if __name__ == "__main__":
 + <strong>返回</strong> <strong>dict</strong><strong>/</strong><strong>object</strong>：返回结构化数据，方便大模型进一步解析和提取特定字段。
 + <strong>返回 Command</strong>：通过 `Command(update={...})` <strong>直接修改 Agent 的状态（State）</strong>。通常需要结合返回一个 `ToolMessage` 来闭环工具调用。
 
-`command_tool.py`
-
-```python
+```python {title="command_tool.py"}
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -352,9 +344,7 @@ if __name__ == "__main__":
 + <strong>ToolNode</strong>：官方预构建的节点。它就像一个“工具执行线程池”，接收大模型发出的 tool_calls 指令，自动帮你去并发执行对应的 Python 函数，并自动将结果包装成 ToolMessage 返回。
 + <strong>tools_condition</strong>：官方预构建的条件边（网关）。它负责判断大模型的输出：如果有调用工具的请求，就路由去 ToolNode 节点；如果没有，就路由到 END（结束对话）。
 
-`tool_node_routing_demo.py`
-
-```powershell
+```python {title="tool_node_routing_demo.py"}
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -495,9 +485,7 @@ Name: get_weather
 + <strong>业务痛点</strong>：Agent 的 State（短期记忆）是绑定在单一 thread_id（单次会话）上的。如果用户今天告诉 Agent 他对海鲜过敏，明天新开了一个对话框（新的 thread_id），Agent 就彻底失忆了。
 + <strong>解决方案</strong>：引入 BaseStore。在工具中通过 `runtime.store` 访问底层存储引擎（测试用 `InMemoryStore`，生产用 `PostgresStore`），通过 `(namespace, key)`的形式持久化长效数据（Long-term memory）。
 
-`long_term_memory_demo.py`
-
-```python
+```python {title="long_term_memory_demo.py"}
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -642,9 +630,7 @@ if __name__ == "__main__":
 
 下面是一份完整的生产级代码。它展示了如何使用 args_schema 严谨定义参数、如何使用 ToolRuntime 读写状态，以及如何通过 Command 修改 Agent 状态机制。
 
-`advanced_tool_demo.py`
-
-```python
+```python {title="advanced_tool_demo.py"}
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
