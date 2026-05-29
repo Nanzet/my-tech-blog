@@ -12,6 +12,9 @@ tags:
 draft: false
 ---
 
+> [Build a semantic search engine with LangChain - Docs by LangChain](https://docs.langchain.com/oss/python/langchain/knowledge-base)
+>
+
 **一句话总结：语义搜索（Semantic Search）是通过将非结构化文本切分并转化为高维稠密向量，利用向量空间内的几何距离来召回与查询意图高度相关的文档片段的核心技术，它是构建 RAG（检索增强生成）系统的先决条件与数据召回基石。**
 
 ---
