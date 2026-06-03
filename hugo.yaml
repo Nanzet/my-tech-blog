@@ -263,3 +263,6 @@ markup:
         lineNumbersInTable: true
         tabWidth: 4
         style: "base16-snazzy" # style 默认值为 monokai，预览所有样式：https://xyproto.github.io/splash/docs/all.html
+
+build:
+  noJSConfigInAssets: true
