@@ -122,10 +122,10 @@ workflow.add_conditional_edges("retrieve", grade_documents)
 # -*- coding: utf-8 -*-
 
 # Author         : nanzet
-# Description    : 基于 LangGraph 构建带“自我纠错”与“最大重试降级”机制的 Agentic RAG
-# requirements   : pip install langgraph langchain langchain-community langchain-huggingface
-#                  langchain-text-splitters langchain-deepseek pydantic
+# Description    : 基于 LangGraph 构建带“自我纠错”与“最大重试降级”机制的 Agentic RAG（结构优化版）
+# requirements   : pip install -U langgraph langchain langchain-community langchain-huggingface langchain-text-splitters langchain-deepseek pydantic
 
+import os
 from typing import Literal
 
 from langchain.chat_models import init_chat_model
@@ -141,87 +141,14 @@ from pydantic import BaseModel, Field
 
 
 # ==========================================
-# 升级点一：继承并扩展全局状态 (State)
+# 1. 全局数据结构定义 (State & Schema)
 # ==========================================
 class AgentState(MessagesState):
-    """
-    继承自带的 MessagesState，并追加 retry_count 字段用于记录重写次数。
-    """
+    """继承自带的 MessagesState，并追加 retry_count 字段用于记录重写次数。"""
 
     retry_count: int
 
 
-# ==========================================
-# 离线数据准备与工具封装 (ETL & Tool)
-# ==========================================
-print("正在加载和向量化数据...")
-docs = WebBaseLoader(
-    "https://lilianweng.github.io/posts/2024-11-28-reward-hacking/"
-).load()
-
-doc_splits = RecursiveCharacterTextSplitter(
-    chunk_size=500, chunk_overlap=50
-).split_documents(docs)
-
-embeddings = HuggingFaceEmbeddings(
-    model_name="BAAI/bge-m3",
-    model_kwargs={"device": "mps"},
-    encode_kwargs={"normalize_embeddings": True},
-)
-
-vectorstore = InMemoryVectorStore.from_documents(
-    documents=doc_splits, embedding=embeddings
-)
-retriever = vectorstore.as_retriever()
-
-
-@tool
-def retriever_tool(query: str) -> str:
-    """当需要获取 Lilian Weng 博客关于强化学习、大模型相关的背景知识时使用此工具。"""
-    retrieved_docs = retriever.invoke(query)
-    return "\n\n".join([doc.page_content for doc in retrieved_docs])
-
-
-# ==========================================
-# 定义大模型与节点逻辑 (Nodes)
-# ==========================================
-llm = init_chat_model("deepseek-chat", model_provider="deepseek", temperature=0)
-llm_with_tools = llm.bind_tools([retriever_tool])
-
-
-def generate_query_or_respond(state: AgentState):
-    """节点1: 决定是直接回复用户，还是调用检索工具"""
-    response = llm_with_tools.invoke(state["messages"])
-    return {"messages": [response]}
-
-
-def rewrite_question(state: AgentState):
-    """节点2: 当检索结果不佳时，重写用户的 Query"""
-    question = state["messages"][0].content
-    prompt = f"分析以下问题并挖掘其深层语义，重写一个更好的搜索关键词:\n{question}"
-    response = llm.invoke([{"role": "user", "content": prompt}])
-
-    # 升级点二：每次进入重写节点，重试次数 +1
-    current_retry = state.get("retry_count", 0)
-    print(f"--> [执行检索重写]: 当前重试次数增加至 {current_retry + 1}")
-    return {
-        "messages": [HumanMessage(content=response.content)],
-        "retry_count": current_retry + 1,
-    }
-
-
-def generate_answer(state: AgentState):
-    """节点3: 最终整合上下文生成回答"""
-    question = state["messages"][0].content
-    context = state["messages"][-1].content  # 最近的一条通常是 Tool 的返回结果
-    prompt = f"请基于以下上下文回答问题。若不知晓或上下文中未提及，请直接说“很抱歉，在知识库中未能找到相关解答”。\n问题:{question}\n上下文:{context}"
-    response = llm.invoke([{"role": "user", "content": prompt}])
-    return {"messages": [response]}
-
-
-# ==========================================
-# 定义图的路由控制逻辑 (Edges / Routing)
-# ==========================================
 class GradeDocuments(BaseModel):
     """裁判模型的结构化输出定义 (Pydantic)"""
 
@@ -230,103 +157,200 @@ class GradeDocuments(BaseModel):
     )
 
 
-def grade_documents(
-    state: AgentState,
-) -> Literal["generate_answer", "rewrite_question"]:
-    """条件边: LLM 作为裁判评估检索质量"""
+# ==========================================
+# 2. 核心工厂函数：构建并编译图状态机
+# ==========================================
+def build_agentic_rag_graph():
+    """
+    工厂函数：封装 ETL 流程、模型初始化与图编译，避免全局变量污染。
+    利用闭包（Closure）特性，使内部节点函数可以安全访问本地的 llm 和 retriever 实例。
+    """
 
-    # 升级点三：前置检查重试次数，防死循环
-    current_retry = state.get("retry_count", 0)
-    if current_retry >= 3:
-        print(
-            f"--> [触发降级保护]: 重试次数已达 {current_retry} 次，放弃检索，直接生成降级回答。"
-        )
-        return "generate_answer"
+    # ----------------------------------
+    # 2.1 离线数据准备 (ETL)
+    # ----------------------------------
+    print("[System] 正在加载和向量化数据...")
 
-    question = state["messages"][0].content
-    context = state["messages"][-1].content
-    prompt = f"你是一个打分员。评估以下文档是否与问题相关。\n问题: {question}\n文档: {context}"
+    # 这里我们使用 Lilian Weng 博客中关于强化学习的文章作为知识库，实际应用中可以替换为更大规模的文档集合。
+    docs = WebBaseLoader(
+        "https://lilianweng.github.io/posts/2024-11-28-reward-hacking/"
+    ).load()
 
-    grader = llm.with_structured_output(GradeDocuments)
-    score = grader.invoke([{"role": "user", "content": prompt}]).binary_score
-    print(f"--> [裁判系统打分]: {score}")
+    # 将文档切分成更小的片段，便于向量化和检索
+    doc_splits = RecursiveCharacterTextSplitter(
+        chunk_size=500, chunk_overlap=50
+    ).split_documents(docs)
 
-    return "generate_answer" if score == "yes" else "rewrite_question"
+    # 使用 HuggingFaceEmbeddings 将文本转换为向量，选择一个适合的模型（如 BGE-M3）并启用归一化以提升检索效果
+    embeddings = HuggingFaceEmbeddings(
+        model_name="BAAI/bge-m3",
+        model_kwargs={"device": "mps"},
+        encode_kwargs={"normalize_embeddings": True},
+    )
 
+    # 构建内存向量数据库并创建检索器
+    vectorstore = InMemoryVectorStore.from_documents(
+        documents=doc_splits, embedding=embeddings
+    )
+    retriever = vectorstore.as_retriever()
 
-def route_on_tool_calls(state: AgentState):
-    """条件边: 判断大模型是否下发了工具调用指令"""
-    last_message = state["messages"][-1]
-    if getattr(last_message, "tool_calls", None):
-        return "tools"
-    return END
+    # ----------------------------------
+    # 2.2 定义工具 (Tools)
+    # ----------------------------------
+    @tool
+    def retriever_tool(query: str) -> str:
+        """当需要获取 Lilian Weng 博客关于强化学习、大模型相关的背景知识时使用此工具。"""
+        retrieved_docs = retriever.invoke(query)
+        return "\n\n".join([doc.page_content for doc in retrieved_docs])
+
+    # ----------------------------------
+    # 2.3 初始化大模型
+    # ----------------------------------
+    llm = init_chat_model("deepseek-chat", model_provider="deepseek", temperature=0)
+    llm_with_tools = llm.bind_tools([retriever_tool])
+
+    # ----------------------------------
+    # 2.4 定义图节点 (Nodes)
+    # ----------------------------------
+    def generate_query_or_respond(state: AgentState):
+        """节点1: 决定是直接回复用户，还是调用检索工具"""
+        response = llm_with_tools.invoke(state["messages"])
+        return {"messages": [response]}
+
+    def rewrite_question(state: AgentState):
+        """节点2: 当检索结果不佳时，重写用户的 Query"""
+        question = state["messages"][0].content
+        prompt = f"分析以下问题并挖掘其深层语义，重写一个更好的搜索关键词:\n{question}"
+        response = llm.invoke([{"role": "user", "content": prompt}])
+
+        current_retry = state.get("retry_count", 0)
+        print(f"[Log] 执行检索重写: 当前重试次数增加至 {current_retry + 1}")
+        return {
+            "messages": [
+                HumanMessage(content=response.content)
+            ],  # 将重写后的问题放回 messages 中，供下一轮使用
+            "retry_count": current_retry + 1,
+        }
+
+    def generate_answer(state: AgentState):
+        """节点3: 最终整合上下文生成回答"""
+        question = state["messages"][0].content
+        context = state["messages"][-1].content
+        prompt = f"请基于以下上下文回答问题。若不知晓或上下文中未提及，请直接说“很抱歉，在知识库中未能找到相关解答”。\n问题:{question}\n上下文:{context}"
+        response = llm.invoke([{"role": "user", "content": prompt}])
+        return {"messages": [response]}
+
+    # ----------------------------------
+    # 2.5 定义路由边 (Conditional Edges)
+    # ----------------------------------
+    def grade_documents(
+        state: AgentState,
+    ) -> Literal["generate_answer", "rewrite_question"]:
+        """条件边: LLM 作为裁判评估检索质量"""
+        current_retry = state.get("retry_count", 0)
+
+        # 降级保护
+        if current_retry >= 3:
+            print(
+                f"[Log] 触发降级保护: 重试次数已达 {current_retry} 次，直接生成降级回答。"
+            )
+            return "generate_answer"
+
+        question = state["messages"][0].content
+        context = state["messages"][-1].content
+        prompt = f"你是一个打分员。评估以下文档是否与问题相关。\n问题: {question}\n文档: {context}"
+
+        grader = llm.with_structured_output(GradeDocuments)
+        score = grader.invoke([{"role": "user", "content": prompt}]).binary_score
+        print(f"[Log] 裁判系统打分: {score}")
+
+        return "generate_answer" if score == "yes" else "rewrite_question"
+
+    def route_on_tool_calls(state: AgentState):
+        """条件边: 判断大模型是否下发了工具调用指令"""
+        last_message = state["messages"][-1]
+        if getattr(last_message, "tool_calls", None):
+            return "tools"
+        return END
+
+    # ----------------------------------
+    # 2.6 组装与编译图 (Compile Graph)
+    # ----------------------------------
+    workflow = StateGraph(AgentState)
+
+    workflow.add_node("generate_query_or_respond", generate_query_or_respond)
+    workflow.add_node("tools", ToolNode([retriever_tool]))
+    workflow.add_node("rewrite_question", rewrite_question)
+    workflow.add_node("generate_answer", generate_answer)
+
+    workflow.add_edge(START, "generate_query_or_respond")
+    workflow.add_conditional_edges("generate_query_or_respond", route_on_tool_calls)
+    workflow.add_conditional_edges("tools", grade_documents)
+    workflow.add_edge("rewrite_question", "generate_query_or_respond")
+    workflow.add_edge("generate_answer", END)
+
+    return workflow.compile()
 
 
 # ==========================================
-# 组装状态机 (Compile Graph)
+# 3. 程序执行入口
 # ==========================================
-workflow = StateGraph(AgentState)  # 换用自定义的 AgentState
+def main():
+    # 注入 API Key (生产环境通常在 .env 文件中维护)
+    os.environ["DEEPSEEK_API_KEY"] = os.getenv(
+        "DEEPSEEK_API_KEY", "sk-your-deepseek-api-key"
+    )
 
-# 注册所有节点
-workflow.add_node("generate_query_or_respond", generate_query_or_respond)
-workflow.add_node("tools", ToolNode([retriever_tool]))
-workflow.add_node("rewrite_question", rewrite_question)
-workflow.add_node("generate_answer", generate_answer)
+    # 获取编译好的图引擎
+    graph = build_agentic_rag_graph()
 
-# 定义图的走向
-workflow.add_edge(START, "generate_query_or_respond")
-
-# 如果模型要调工具，就去 tools 节点；否则直接结束（生成回答）
-workflow.add_conditional_edges("generate_query_or_respond", route_on_tool_calls)
-
-# 工具执行完后，必须经过 grade_documents 裁判打分，决定下一步去哪
-workflow.add_conditional_edges("tools", grade_documents)
-
-# 形成循环：重写问题后，回到初始节点重新查
-workflow.add_edge("rewrite_question", "generate_query_or_respond")
-
-# 生成答案后流程结束
-workflow.add_edge("generate_answer", END)
-
-graph = workflow.compile()
-
-# ==========================================
-# 执行测试
-# ==========================================
-if __name__ == "__main__":
-    # 初始化输入，默认 retry_count 为 0（也可以不写，代码中用 .get 做了容错）
     inputs = {
         "messages": [{"role": "user", "content": "What is reward hacking?"}],
         "retry_count": 0,
     }
 
-    # 模拟流式输出节点的运行轨迹
+    print("\n--- 开始流式输出节点轨迹 ---")
     for chunk in graph.stream(inputs):
         for node_name, update_data in chunk.items():
             print(f"--- 节点执行完毕: {node_name} ---")
             if "messages" in update_data:
-                print(update_data["messages"][-1].content[:200] + "...\n")
+                print(f"--- 节点输出信息：{update_data["messages"][-1].content + "\n\n"}")
+                # print(f"最终生成的结果: {update_data['messages'][-1].content}\n")
+
+
+if __name__ == "__main__":
+    main()
+
 
 ```
 
 **输出结果：**
 
 ```powershell
-正在加载和向量化数据...
-Loading weights: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 391/391 [00:00<00:00, 58062.41it/s]
---- 节点执行完毕: generate_query_or_respond ---
-Let me search for information about reward hacking....
+[System] 正在加载和向量化数据...
+Loading weights: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 391/391 [00:00<00:00, 66872.16it/s]
 
---> [裁判系统打分]: yes
+--- 开始流式输出节点轨迹 ---
+--- 节点执行完毕: generate_query_or_respond ---
+--- 节点输出信息：Let me search for information about reward hacking.
+
+
+[Log] 裁判系统打分: yes
 --- 节点执行完毕: tools ---
-Detecting Reward Hacking#
+--- 节点输出信息：Detecting Reward Hacking#
 
 In-Context Reward Hacking#
 
-Reward hacking occurs when a reinforcement learning (RL) agent exploits flaws or ambiguities in the reward function to achieve high rewards, with...
+Reward hacking occurs when a reinforcement learning (RL) agent exploits flaws or ambiguities in the reward function to achieve high rewards, without genuinely learning or completing the intended task. Reward hacking exists because RL environments are often imperfect, and it is fundamentally challenging to accurately specify a reward function.
+
+Let’s Define Reward Hacking#
+Reward shaping in RL is challenging. Reward hacking occurs when an RL agent exploits flaws or ambiguities in the reward function to obtain high rewards without genuinely learning the intended behaviors or completing the task as designed. In recent years, several related concepts have been proposed, all referring to some form of reward hacking:
+
 
 --- 节点执行完毕: generate_answer ---
-根据上下文，reward hacking（奖励黑客行为）是指强化学习（RL）智能体利用奖励函数中的缺陷或模糊性来获得高额奖励，而没有真正学习或完成预期任务的行为。...
+--- 节点输出信息：根据上下文，reward hacking（奖励黑客行为）是指强化学习（RL）代理利用奖励函数中的缺陷或模糊性来获得高额奖励，而没有真正学习或完成预期任务的行为。
+
+
 ```
 
 **代码执行流程图：**
