@@ -355,7 +355,49 @@ Reward shaping in RL is challenging. Reward hacking occurs when an RL agent expl
 
 **代码执行流程图：**
 
-![1781083585350](/image/构建带自我纠错机制的LangGraph混合RAG智能体/1781083585350.png)
+{{< mermaid >}}
+graph TD
+    %% 定义节点样式
+    classDef state fill:#1a1a1a,stroke:#333,stroke-width:2px,color:#fff
+    classDef agent fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#fff
+    classDef tool fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
+    classDef condition fill:#7c2d12,stroke:#f97316,stroke-width:2px,color:#fff
+
+    %% 提前定义首尾节点
+    START((START<br>初始输入)):::state
+    END_NODE((END<br>执行结束)):::state
+
+    START --> Node_GenQuery
+    
+    subgraph loop_block [LangGraph 引擎流转区域]
+        Node_GenQuery["节点：generate_query_or_respond<br>(大模型意图识别：直接回复或调工具)"]:::agent
+        
+        Cond_ToolCalls{"条件路由：route_on_tool_calls<br>(判断是否下发 tool_calls 指令)"}:::condition
+        
+        Node_Tools["节点：tools<br>(底层执行 retriever_tool 检索本地库)"]:::tool
+        
+        Cond_Grade{"条件路由：grade_documents<br>(前置检查 retry_count 并打分)"}:::condition
+        
+        Node_Rewrite["节点：rewrite_question<br>(重写 Query 并将 retry_count 增加)"]:::agent
+        
+        Node_Answer["节点：generate_answer<br>(基于最终上下文生成回答)"]:::agent
+        
+        %% 核心执行流转
+        Node_GenQuery --> Cond_ToolCalls
+        Cond_ToolCalls -- "无 tool_calls (无需查库)" --> END_NODE
+        Cond_ToolCalls -- "有 tool_calls (触发检索)" --> Node_Tools
+        
+        Node_Tools --> Cond_Grade
+        
+        Cond_Grade -- "评分：no (不相关且次数未达标)" --> Node_Rewrite
+        Node_Rewrite -- "带着新问题重试" --> Node_GenQuery
+        
+        Cond_Grade -- "评分：yes (相关)" --> Node_Answer
+        Cond_Grade -- "触发降级 (达到重试上限)" --> Node_Answer
+    end
+    
+    Node_Answer --> END_NODE
+{{< /mermaid >}}
 
 ---
 
