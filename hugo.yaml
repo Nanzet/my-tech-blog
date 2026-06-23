@@ -249,7 +249,7 @@ markup:
             ## Set to true if you have HTML content inside Markdown
             unsafe: true
     tableOfContents:
-        endLevel: 3
+        endLevel: 5
         ordered: true
         startLevel: 2
     highlight:
