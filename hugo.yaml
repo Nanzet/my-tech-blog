@@ -107,7 +107,7 @@ params:
             serverURL: https://waline-comments-wheat-six.vercel.app
             lang: zh-CN
             pageview: true # 开启阅读量
-            avatar: 'monsterid' # 默认兜底头像
+            avatar: "monsterid" # 默认兜底头像
             emoji:
                 - https://unpkg.com/@waline/emojis@1.0.1/weibo
                 - https://cdn.jsdelivr.net/gh/walinejs/emojis@1.0.0/bilibili
@@ -265,4 +265,4 @@ markup:
         style: "base16-snazzy" # style 默认值为 monokai，预览所有样式：https://xyproto.github.io/splash/docs/all.html
 
 build:
-  noJSConfigInAssets: true
+    noJSConfigInAssets: true
