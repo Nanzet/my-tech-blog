@@ -10,6 +10,8 @@ tags:
     - Agents
 draft: false
 ---
+> [Agents - Docs by LangChain](https://docs.langchain.com/oss/python/langchain/agents)
+
 ## 一句话总结
 
 在 `LangChain` 体系中，智能体（`Agent`）是由大语言模型（`Model`）与运行容器（`Harness`）组合而成的可配置执行循环；它在状态机中持续决策并调用工具，结合中间件实现容错、脱敏、上下文压缩与人工审批，是构建具备自主行动、复杂推理和长任务处理能力的 AI 应用核心基石。
@@ -118,8 +120,8 @@ structured = result["structured_response"]
 
 当直接传入 schema 类型时，LangChain 会根据模型能力自动选择策略：
 
-- `ProviderStrategy`：使用模型厂商原生结构化输出，通常更稳定。
-- `ToolStrategy`：通过工具调用协议模拟结构化输出，兼容面更广。
+- `ProviderStrategy`（原生结构化输出策略）：使用模型厂商原生结构化输出，通常更稳定。
+- `ToolStrategy`（工具调用结构化输出策略）：通过工具调用协议模拟结构化输出，兼容面更广。
 
 最终结构化结果从 `result["structured_response"]` 中读取。上线前必须验证目标模型**是否能同时稳定处理业务工具调用和最终结构化输出**。
 
@@ -210,9 +212,9 @@ result = agent.invoke(
 
 ### 上下文管理与长期记忆
 
-- `SummarizationMiddleware`：当上下文接近窗口上限时自动压缩旧消息，同时保留近期消息。
-- `MemoryMiddleware`：加载长期指令或记忆，例如 `sources=["./AGENTS.md"]`。
-- `SkillsMiddleware`：按需加载领域技能，避免一次性把所有知识塞入上下文。
+- `SummarizationMiddleware`（摘要压缩中间件）：当上下文接近窗口上限时自动压缩旧消息，同时保留近期消息。
+- `MemoryMiddleware`（长期记忆中间件）：加载长期指令或记忆，例如 `sources=["./AGENTS.md"]`。
+- `SkillsMiddleware`（技能加载中间件）：按需加载领域技能，避免一次性把所有知识塞入上下文。
 - `store` 与 `runtime.store`：`store` 是长期记忆存储，`runtime.store` 是工具或中间件在运行时访问这份长期存储的入口，适合读写用户偏好、组织规则、业务实体和经验信息。
 
 > **版本注意：`SummarizationMiddleware` 的旧参数已不推荐使用。**
@@ -220,7 +222,7 @@ result = agent.invoke(
 
 ### 执行环境与长任务工作区
 
-- `FilesystemMiddleware`：给 Agent 提供可读写工作区，适合保存中间产物、草稿、文件分析结果和跨步骤状态。
+- `FilesystemMiddleware`（文件工作区中间件）：给 Agent 提供可读写工作区，适合保存中间产物、草稿、文件分析结果和跨步骤状态。
 - `StateBackend`：为 `deepagents` 中间件提供状态后端。
 - `Sandboxes`：用于隔离执行环境，降低代码执行和文件操作风险。
 - `Interpreters`：用于代码解释执行，适合数据分析、日志处理、代码研究等任务。
@@ -396,6 +398,7 @@ if __name__ == "__main__":
 **输出结果：**
 
 ```powershell
+
 ```
 
 **代码说明：**
@@ -810,7 +813,7 @@ main_builder.add_node("research_node", compiled_research_team)  # 嵌入子图
 #### 踩坑 1：只传 `thread_id`，但没有配置 `checkpointer`
 
 - 原因：`thread_id` 只是会话作用域标识，不负责保存状态。
-- 修复方式：本地调试使用 `checkpointer=InMemorySaver()`，生产环境使用持久化 checkpointer；涉及多轮对话、HITL 中断恢复和长任务续跑时必须配置。
+- 修复方式：本地调试使用 `checkpointer=InMemorySaver()`，生产环境使用持久化 checkpointer（例如 `PostgresSaver`、`AsyncPostgresSaver`、`SqliteSaver`、`MongoDBSaver` 或 Redis 类后端。其中 `PostgresSaver` / `AsyncPostgresSaver` 更适合多实例生产部署，因为它能在进程重启、任务中断、人工审批和长任务恢复场景中可靠保存并恢复图状态）；涉及多轮对话、HITL 中断恢复和长任务续跑时必须配置。
 
 #### 踩坑 2：混淆 `context`、`thread_id` 与 `store`
 
@@ -824,28 +827,23 @@ main_builder.add_node("research_node", compiled_research_team)  # 嵌入子图
 
 #### 踩坑 4：用 `system_prompt` 替代确定性安全策略
 
-- 原因：prompt 是软约束，无法稳定处理隐私、审批、调用次数和高风险动作。
-- 修复方式：使用 `PIIMiddleware`、`HumanInTheLoopMiddleware`、`ModelCallLimitMiddleware`、`ToolCallLimitMiddleware` 等中间件实现硬边界。
+- 原因：prompt 是**软约束**，无法稳定处理隐私、审批、调用次数和高风险动作。
+- 修复方式：使用 `PIIMiddleware`、`HumanInTheLoopMiddleware`、`ModelCallLimitMiddleware`、`ToolCallLimitMiddleware` 等中间件实现**硬边界**。
 
 #### 踩坑 5：长任务不做上下文管理
 
 - 原因：Agent 循环会不断累积 `messages`、工具结果和中间步骤，最终导致上下文溢出或注意力污染。
 - 修复方式：使用 `SummarizationMiddleware`、`FilesystemMiddleware`、`MemoryMiddleware`、`SkillsMiddleware` 和子 Agent 隔离上下文。
 
-#### 踩坑 6：继续使用 deprecated 摘要参数
-
-- 原因：`summary_prefix`、`max_tokens_before_summary`、`messages_to_keep` 已不应作为新代码首选。
-- 修复方式：分别改用 `summary_prompt`、`trigger=("tokens", value)`、`keep=("messages", value)`。
-
-#### 踩坑 7：结构化输出与工具调用没有联合验证
+#### 踩坑 6：结构化输出与工具调用没有联合验证
 
 - 原因：`response_format` 可能走 `ProviderStrategy` 或 `ToolStrategy`，不同模型对结构化输出和工具调用并用的支持程度不同。
 - 修复方式：上线前针对目标模型压测 `structured_response` 成功率、schema 兼容性和工具调用冲突情况。
 
-#### 踩坑 8：缺少流式观测和 LangSmith trace
+#### 踩坑 7：缺少流式观测和 LangSmith trace
 
 - 原因：只看最终回答无法定位工具选择错误、循环过长、token 成本异常、上下文污染和重试风暴。
-- 修复方式：开发阶段使用 `stream_events()` 观察执行过程，生产阶段接入 `LangSmith` 做 tracing、eval 和 monitoring。
+- 修复方式：开发阶段使用 `stream_events()` 观察执行过程，生产阶段接入 `LangSmith` 做 tracing（调用链追踪）、eval（效果评估） 和 monitoring（线上监控）。
 
 ---
 
@@ -853,40 +851,74 @@ main_builder.add_node("research_node", compiled_research_team)  # 嵌入子图
 
 #### Q1：LangChain Agent 的核心执行模型是什么？
 
-**答：** 核心是 model -> tool_calls -> tool_results -> model 的状态循环。模型读取当前 State 中的 messages 和上下文，决定是否调用工具；运行时执行工具并把结果写回状态；模型继续推理，直到不再请求工具并输出最终答案。相比普通 LLM.invoke()，Agent 多了行动能力、状态演进和多步决策；相比固定工作流，Agent 的步骤数量和工具选择由模型动态决定。
+**答：** 核心是 `model` -> `tool_calls` -> `tool_results` -> `model` 的状态循环。模型读取当前 `State` 中的 `messages` 和上下文，决定是否调用工具；运行时执行工具并把结果写回状态；模型继续推理，直到不再请求工具并输出最终答案。相比普通 `LLM.invoke()`，Agent 多了行动能力、状态演进和多步决策；相比固定工作流，Agent 的步骤数量和工具选择由模型动态决定。
 
 #### Q2：为什么官方说 Agent = Model + Harness？
 
-**答：** Model 是推理引擎，负责工具选择、工具结果解释和任务终止判断；Harness 是运行容器，包含 tools、system_prompt、middleware、checkpointer、context_schema、store 和流式机制。单纯模型调用只能生成文本，而 Harness 让模型具备可控执行、状态恢复、安全拦截和工程扩展能力。
+**答：** `Model` 是推理引擎，负责工具选择、工具结果解释和任务终止判断；`Harness` 是运行容器，包含 `tools`、`system_prompt`、`middleware`、`checkpointer`、`context_schema`、`store` 和流式机制。单纯模型调用只能生成文本，而 `Harness` 让模型具备可控执行、状态恢复、安全拦截和工程扩展能力。
 
 #### Q3：create_agent() 的架构定位是什么？
 
-**答：** create_agent() 是构建 Agent harness 的统一入口，它把 model=、tools=、system_prompt=、response_format=、middleware=、checkpointer=、context_schema= 等组装成可执行图。底层依赖 LangGraph 的状态图能力，因此支持 invoke()、stream_events()、checkpoint、interrupt 和子图组合。相比手写循环，它提供标准化、可组合、可观测的 Agent 运行框架。
+**答：** `create_agent()` 是构建 Agent harness 的统一入口，它把 `model=`、`tools=`、`system_prompt=`、`response_format=`、`middleware=`、`checkpointer=`、`context_schema=` 等组装成可执行图。底层依赖 LangGraph 的状态图能力，因此支持 `invoke()`、`stream_events()`、`checkpoint`、`interrupt` 和子图组合。相比手写循环，它提供标准化、可组合、可观测的 Agent 运行框架。
 
 #### Q4：thread_id、context、store 如何区分？
 
-**答：** thread_id 标识会话线程，配合 checkpointer 保存短期消息历史和图状态；context 是单次运行时输入，通过 runtime.context 给工具和中间件读取；store 是跨线程、跨会话的长期记忆，通过 runtime.store 读写。三者分别解决会话连续性、运行时依赖注入和长期知识沉淀。
+**答：** 三者分别解决会话连续性、运行时依赖注入和长期知识沉淀。
+
+* `thread_id` 是会话线程的唯一标识符，配合 `checkpointer` 保存、关联和恢复该线程下的短期消息历史与图状态；
+* `context` 是单次运行时输入，通过 `runtime.context` 给工具和中间件读取；
+* `store` 不绑定某一次会话线程，而是保存可长期复用的信息，例如用户偏好、业务规则和组织知识；在同一应用内，只要多条会话线程或多个 `Agent` 运行共享同一个 `store` 后端，就可以通过 `runtime.store` 读取这些长期记忆。
 
 #### Q5：ProviderStrategy 和 ToolStrategy 的区别是什么？
 
-**答：** ProviderStrategy 使用模型厂商原生结构化输出能力，约束更强、解析更稳定；ToolStrategy 通过工具调用协议让模型输出符合 schema 的参数，兼容更多模型但依赖 tool calling 质量。直接传 response_format=Schema 时，LangChain 会根据模型能力自动选择。工程上必须验证目标模型是否能同时稳定处理业务工具和最终结构化响应。
+**答：** `ProviderStrategy` 使用模型厂商原生结构化输出能力，约束更强、解析更稳定；`ToolStrategy` 通过工具调用协议让模型输出符合 schema 的参数，兼容更多模型但依赖 `tool calling` 质量。直接传 `response_format=Schema` 时，LangChain 会根据模型能力自动选择。工程上必须验证目标模型是否能同时稳定处理业务工具和最终结构化响应。
 
 #### Q6：为什么生产 Agent 必须重视 middleware？
 
-**答：** 很多生产控制不能交给模型自觉完成。middleware 可以在模型调用、工具调用、状态更新等生命周期中插入确定性逻辑，例如重试、fallback、调用限制、PII 处理、人工审批和上下文压缩。相比 prompt，middleware 更可测试、更可组合、更可审计。
+**答：** 很多生产控制不能交给模型自觉完成。`middleware` 可以在模型调用、工具调用、状态更新等生命周期中插入确定性逻辑，例如重试、`fallback`、调用限制、`PII` 处理、人工审批和上下文压缩。相比 `prompt`，`middleware` 更可测试、更可组合、更可审计。
+
+> 这里的 `fallback` 指降级或备用路径切换，例如主模型失败时切换到备用模型，主工具不可用时切换到备用工具，或结构化输出失败时切换到更保守的解析策略。
 
 #### Q7：什么时候应该引入 SubAgentMiddleware？
 
-**答：** 当任务跨领域、工具集合很大、上下文容易污染、需要并行研究或需要隔离风险时，应引入 SubAgentMiddleware。主 Agent 作为 supervisor 负责任务拆解、路由和汇总；子 Agent 使用独立 system_prompt、tools、model 和上下文完成专门任务。它比单 Agent 更能降低注意力稀释，比固定流程更保留动态任务拆解能力。
+**答：** 当**任务跨领域**、**工具集合很大**、**上下文容易污染**、需要**并行研究或隔离风险**时，应引入 `SubAgentMiddleware`。主 `Agent` 作为 `supervisor` 负责任务拆解、路由和汇总；子 Agent 使用独立 `system_prompt`、`tools`、`model` 和上下文完成专门任务。它*比单 Agent 更能降低注意力稀释*，*比固定流程更保留动态任务拆解能力*。
 
 #### Q8：HumanInTheLoopMiddleware 的底层机制是什么？
 
-**答：** HumanInTheLoopMiddleware 在模型生成工具调用之后、工具执行之前检查 interrupt_on 策略；命中后触发 LangGraph interrupt，并依赖 checkpoint 保存当前图状态。人工返回 approve、edit、reject 或 respond 后，Agent 从中断点恢复。它是执行前控制，而不是事后审计。
+**答：** `HumanInTheLoopMiddleware` 在*模型生成工具调用之后、工具执行之前*检查 `interrupt_on` 策略；命中后触发 `LangGraph interrupt`，并依赖 `checkpoint` 保存当前图状态。人工返回 `approve`、`edit`、`reject` 或 `respond` 后，Agent 从中断点恢复。它*是执行前控制，而不是事后审计*。
+
+> 官方 `HumanInTheLoopMiddleware` 文档里，`interrupt_on` 的值主要有三种写法：
+>
+> ```python
+> HumanInTheLoopMiddleware(
+>     interrupt_on={
+>         "write_file": True,
+>         "execute_sql": {"allowed_decisions": ["approve", "reject"]},
+>         "read_data": False,
+>     }
+> )
+> ```
+>
+> 含义是：
+>
+> * 当模型准备调用 `write_file` 时，触发人工审批。
+> * 当模型准备调用 `execute_sql` 时，触发人工审批，但人工只能 `approve` 或 `reject`。
+> * 当模型准备调用 `read_data` 时，不触发人工审批，直接执行。
+>
+> `interrupt_on` 用于配置哪些工具调用需要人工审批，以及允许人工做哪些决策。它可以对某个工具设置 `True`、`False`，或设置 `allowed_decisions` 与 `when` 条件函数。人工决策中，`approve` 表示按原参数执行，`edit` 表示修改参数后执行，`reject` 表示拒绝执行并把反馈交还给模型，`respond` 表示人工直接作为工具结果返回，通常用于 `ask_user` 这类交互式工具。
 
 #### Q9：如何防止 Agent 无限循环和成本失控？
 
-**答：** 需要多层控制：模型层设置 timeout 和 max_retries；Agent 层使用 ModelCallLimitMiddleware 和 ToolCallLimitMiddleware；工具层保证幂等、限流和超时；观测层使用 LangSmith 追踪调用链、token、延迟和错误。核心原则是把开放式推理循环约束在次数、时间、成本和权限边界内。
+**答：** 需要多层控制：核心原则是把开放式推理循环约束在次数、时间、成本和权限边界内。
+
+* **`Model` 层**：设置 `timeout` 和 `max_retries`；
+* **`Agent` 层**：使用 `ModelCallLimitMiddleware` 和 `ToolCallLimitMiddleware`；
+* **`Tool` 层**：保证幂等、限流和超时。
+  * 幂等：用于防止同一工具调用被重复执行后产生重复副作用；
+  * 限流：用于限制工具调用频率和次数，避免 Agent 循环调用导致成本、额度或外部系统压力失控；
+  * 超时：用于防止单次工具调用长时间阻塞整个 Agent 执行循环。
+* **观测层**：使用 `LangSmith` 追踪调用链、`token`、延迟和错误。
 
 #### Q10：如何判断一个 Agent 是否生产可用？
 
-**答：** 不能只看最终回答质量，而要评估完整决策轨迹，包括工具调用准确率、结构化输出成功率、平均模型调用次数、工具失败恢复、上下文压缩质量、HITL 命中率、PII 拦截率、延迟、token 成本和回归测试表现。Agent 是“推理 + 执行”的闭环系统，因此评估对象必须覆盖执行轨迹和外部副作用。
+**答：** 不能只看最终回答质量，而要**评估完整决策轨迹**，包括**工具调用准确率**、**结构化输出成功率**、**平均模型调用次数**、**工具失败恢复**、**上下文压缩质量**、**HITL 命中率**、**PII 拦截率**、**延迟**、**token 成本**和**回归测试表现**。Agent 是“推理 + 执行”的闭环系统，因此评估对象必须覆盖执行轨迹和外部副作用。
