@@ -1,6 +1,7 @@
 ---
 title: "LangChain Agents 核心机制与架构解析"
 date: 2026-05-07T22:02:41+08:00
+lastmod: 2026-07-08T22:32:41+08:00
 slug: "langchain-agents-architecture-deep-dive"
 image: ""
 categories:
@@ -250,11 +251,13 @@ result = agent.invoke(
 
 ## 工程化代码落地示例
 
-以下示例保留官方文档中的核心思想：`create_agent()`、`@tool`、`response_format`、`thread_id`、`checkpointer`、`context_schema`、`middleware` 和结构化输出。代码删除了假密钥写入逻辑，并在缺少环境变量或依赖时给出中文提示。
+本节通过两个可独立运行的脚本，展示 `LangChain Agents` 在工程中的典型落地方式：示例 1 聚焦生产级 `Agent` 调用链路，覆盖工具调用、结构化输出、运行时上下文、短期记忆和容错控制；示例 2 聚焦长任务 `Agent Harness`，展示如何通过上下文压缩、技能加载、本地资源管理和子 `Agent` 委派支撑复杂任务执行。
 
-### 示例 1：enterprise_agent_pipeline.py
+### 示例 1：生产级 `Agent` 调用链路：工具调用、结构化输出与短期记忆
 
-```python {title="enterprise_agent_pipeline.py"}
+enterprise_agent_pipeline.py
+
+```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -398,28 +401,46 @@ if __name__ == "__main__":
 **输出结果：**
 
 ```powershell
-
+结构化摘要：
+{
+  "summary": "AI Agent 工程化落地的三个关键能力如下：\n\n1. **冷热解耦的结构化记忆管理能力**：解决 LLM 上下文（Context）窗口限制与记忆丢失问题。工程落地需构建**短期记忆**（基于 Redis 的会话滑动窗口与动态摘要）与**长期记忆**（基于向量数据库的 RAG 语义检索与 Key-Value 用户画像存储）的冷热分离架构，并建立记忆的自动写入、剪枝与关联检索机制。\n\n2. **确定性执行与安全工具编排能力**：解决大模型输出“幻觉”与企业级业务高确定性要求的冲突。工程落地需通过**强类型 Schema 校验**（如 JSON Schema 校验参数）、**工具调用的异常容错与重试机制**、**代码解释器的沙箱安全隔离**，并结合**状态机/有状态工作流引擎（如 LangGraph、Temporal）**，在 Agent 推理与确定性执行流之间建立安全边界。\n\n3. **DAG 状态链路可观测性与闭环评估能力**：解决 Agent 内部推理“黑盒”、故障排查困难以及迭代效果无法量化的问题。工程落地需引入**分布式 Trace 链路追踪**（如 OpenTelemetry、LangSmith），将 Planning-Reasoning-Action 拆解为有向无环图（DAG）并可视化；同时建立**回归评估流水线**，使用金标准数据集（Golden Dataset）与 LLM-as-a-judge 机制，实现 Agent 提示词和逻辑迭代的自动化量化评估。",
+  "confidence": 0.95,
+  "next_actions": [
+    "设计并实现基于 Redis + 向量数据库的 Agent 双层记忆存储方案，优化多轮对话上下文消耗。",
+    "引入 LangGraph 框架，定义包含人工确认（Human-in-the-loop）的安全工具编排工作流。",
+    "在测试环境中部署 LangSmith 或 Phoenix 观测服务，接入 Trace 埋点以实现 Agent 执行链路的全面可视化监控。"
+  ]
+}
+第二轮结构化回答：
+{
+  "summary": "在高级 AI Agent 面试中，候选人应避免“套用 LangChain 默认模板”的初级描述，转而采用“痛点痛击 -> 架构权衡 -> 指标量化”的高级叙事结构。以下是针对三大关键能力的高分面试表达策略：\n\n1. **记忆管理能力面试表达：从“接入向量库”升级为“高并发冷热解耦的记忆引擎设计”**\n   * **痛点引入**：若将全部历史多轮会话直接塞入 Prompt，不仅会导致 Token 成本呈指数级上升，还会因大模型“Lost in the Middle（中间信息迷失）”导致推理准确率下降。\n   * **高分话术**：在架构设计中，我采用了**冷热解耦的记忆架构**。**短期记忆**基于 Redis 实现，采用“滑动窗口 + 异步 LLM 自动摘要压缩”机制，确保每次携带的上下文不超过 4K Token；**长期记忆**采用基于 Pydantic-Schema 结构化的 KV 存储（存储用户画像与偏好）和基于语义分片（Semantic Chunking）的向量库检索（RAG）。同时，设计了**记忆衰减算法（如结合时间权重的 Ebbinghaus 算法）**，动态计算记忆召回的 Relevance 评分，从而在保障 Agent 长期拟人化认知的同时，将单次 API Token 成本降低了 40%。\n\n2. **工具编排能力面试表达：从“调用 Function Calling”升级为“状态机强约束与防刷防爆控制”**\n   * **痛点引入**：完全自由的 ReAct（Reasoning and Acting）架构极易陷入“工具死循环”或在异常输入下产生不确定性的系统越权，造成账单爆炸和安全合规风险。\n   * **高分话术**：为了在企业级落地中兼顾 Agent 的灵活性与业务的硬确定性，我采用了 **LangGraph / 状态机（State Graph）** 对 Agent 推理路径进行局部强约束。对于高危工具调用（如资金交易、写库操作），在状态机的边（Edge）上配置了 **Human-In-The-Loop（人工介入）中断挂起机制**；在工具层自研了 **Pydantic 动态 Schema 校验拦截器**，对 LLM 吐出的 JSON 进行静态类型强校。针对黑客攻击或模型死循环，设计了**熔断器模式（Circuit Breaker）**，单次 Session 的工具调用次数（Max Iterations）严格限制在 5 次以内，单次会话超时限制在 15s 以内，保障了系统高可用与安全防御。\n\n3. **可观测性能力面试表达：从“看后台 Log”升级为“基于 OpenTelemetry 的 DAG 树状 Tracing 与闭环评估体系”**\n   * **痛点引入**：Agent 的推理过程是多步且非线性的，传统的单点 APM 日志无法还原“LLM 为什么在第三步选错了工具”这一黑盒现场。\n   * **高分话术**：我为生产环境引入了 **OpenTelemetry 规范与 Phoenix/LangSmith 深度集成的 Trace 监控架构**。每一次 Agent 的复杂调度都会生成一个 Trace ID，将 Planning -> Tool Call -> Observation -> Re-planning 的闭环拆解为树状 Spans，能够秒级定位是 Prompt 语义偏移、API 延迟还是 LLM 幻觉导致的任务失败。此外，我们搭建了**自动化回归评估管线（CI/CD Evaluation Pipeline）**，积累了 500+ 条真实业务场景的 Golden Dataset，采用 `Ragas` 框架评估检索召回率与内容忠实度，并配合 **LLM-as-a-Judge** 双模型交叉评分。每一次 Agent 拓扑逻辑或 Prompt 的修改，必须通过自动化 Regression Test 且评分提升后才能灰度发布，使 Agent 的策略调优走向数据驱动。",
+  "confidence": 0.98,
+  "next_actions": [
+    "结合你目前的实际项目，将上述“冷热记忆”、“状态机熔断”、“DAG Trace”话术整理进个人简历的“项目深挖（Deep Dive）”模块中。",
+    "模拟面试官可能提出的追问（如：“如何解决向量检索的噪声污染？”“多并发下 Redis 锁如何设计？”），准备对应的技术底座支持方案。"
+  ]
+}
 ```
 
 **代码说明：**
 
-该脚本演示了一个具备工程化特征的 `LangChain Agent`：通过 `create_agent()` 将模型、工具、系统提示词、结构化输出、运行时上下文、短期状态保存和容错中间件组合成一个可执行的 Agent。
+* 该脚本演示一个偏生产化的 `Agent` 调用链路，覆盖工具调用、结构化输出、短期记忆、运行时上下文注入和调用限制。
+* `RequestContext` 使用 `dataclass` 定义单次运行的业务上下文，包括 `user_id` 和 `tenant_id`，并通过 `context_schema=RequestContext` 注册给 `Agent`。
+* `search()` 使用 `@tool` 声明为工具函数，并通过 `runtime.context` 读取 `invoke()` 时传入的 `context` 数据，实现工具侧的运行时上下文访问。
+* `AgentAnswer` 使用 `TypedDict` 定义结构化输出 schema，避免自定义 `Pydantic` 类型被 `checkpointer` 序列化时产生未注册类型 warning。
+* `create_agent()` 中的 `response_format=AgentAnswer` 用于约束最终结构化结果，输出会写入 `result["structured_response"]`。
+* `checkpointer=InMemorySaver()` 启用短期记忆，配合 `thread_id` 保存同一会话线程下的消息状态，使第二轮调用可以接续第一轮上下文。
+* `config={"configurable": {"thread_id": str(uuid7())}}` 为当前会话生成唯一线程标识，用于隔离不同会话的短期状态。
+* `ModelRetryMiddleware` 和 `ToolRetryMiddleware` 分别处理模型调用与工具调用的失败重试，提升瞬时错误下的稳定性。
+* `ModelCallLimitMiddleware` 和 `ToolCallLimitMiddleware` 分别限制单次 `run` 中的模型调用次数和工具调用次数，防止 Agent 无限循环或工具滥用。
+* `exit_behavior="end"` 表示模型调用超限后直接结束当前运行；`exit_behavior="continue"` 表示工具调用超限后跳过后续工具执行，让模型基于已有上下文继续收尾回答。
+* 脚本连续调用两次 `agent.invoke()`，并复用同一个 `config` 和 `thread_id`，用于演示短期记忆如何让第二轮问题接续第一轮对话状态。
 
-- `RequestContext` 是开发者自定义的单次运行时上下文结构，用于声明本次 `invoke()` 可传入的业务字段，例如 `user_id` 和 `tenant_id`。
-  - `context_schema=RequestContext` 告诉 LangChain：本 Agent 的 `context` 应符合 `RequestContext` 结构；工具内部可以通过 `runtime.context` 读取这些上下文数据。
-- `AgentAnswer(TypedDict)` 定义结构化输出的字段，包括 `summary`、`confidence` 和 `next_actions`。相比 `Pydantic BaseModel`，`TypedDict` 更轻量，`structured_response` 通常按普通 `dict` 处理，更适合单文件示例，也能避免自定义 `Pydantic` 对象进入 checkpoint 后触发反序列化 warning。
-- `search()` 是通过 `@tool` 注册的工具，模型可以根据任务需要决定是否调用它。这里的 `runtime: ToolRuntime[RequestContext]` 用于让工具读取当前 run 的 `context`。
-- `checkpointer=InMemorySaver()` 用于保存当前 `thread_id` 下的短期 `State`，因此第二次 `invoke()` 复用同一个 `config` 时，可以延续上一轮对话状态。
-- `ModelRetryMiddleware(max_retries=3)` 和 `ToolRetryMiddleware(max_retries=2)` 分别处理模型调用失败和工具调用失败，提高运行稳定性。
-- `ModelCallLimitMiddleware(run_limit=8, exit_behavior="end")` 限制单次 run 中最多进行 8 次模型调用，超限后优雅结束，防止 Agent 无限循环。
-- `ToolCallLimitMiddleware(run_limit=5, exit_behavior="continue")` 限制单次 run 中最多执行 5 次工具调用，超限后拦截后续工具调用，并让模型基于已有上下文继续收尾回答。
-- 两轮调用都通过 `result["structured_response"]` 获取结构化结果，并使用 `json.dumps(..., ensure_ascii=False, indent=2)` 打印，避免直接打印底层 `AIMessage.content` 时暴露 provider 原始消息结构。
+### 示例 2：长任务 `Agent Harness`：上下文压缩、技能加载与子 `Agent` 委派
 
-需要注意的是，使用 `google_genai:gemini-3.5-flash` 同时启用 `tools` 和 `response_format` 时，底层响应可能包含 `function_call` 等非文本 part，因此可能出现 `non-text parts` warning。只要业务侧能正常读取 `structured_response`，通常不影响该示例的结构化输出使用。
+deep_agent_harness_demo.py
 
-### 示例 2：deep_agent_harness_demo.py
-
-```python {title="2：deep_agent_harness_demo.py"}
+```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -798,11 +819,17 @@ main_builder.add_node("research_node", compiled_research_team)  # 嵌入子图
 
 **代码说明：**
 
-该脚本演示了一个长任务场景下的 `Deep Agents` 风格 `Agent Harness`：主 Agent 使用 `google_genai:gemini-3.5-flash` 负责任务规划、路由和最终汇总，子 Agent 使用 `deepseek:deepseek-v4-flash` 执行具体研究任务。
-
-核心能力由 `middleware` 组合提供：`FilesystemMiddleware` 提供文件工作区，`SummarizationMiddleware` 负责上下文压缩，`MemoryMiddleware` 加载 `AGENTS.md` 长期指令，`SkillsMiddleware` 加载 `skills/` 技能说明，`TodoListMiddleware` 维护任务列表，`SubAgentMiddleware` 实现主 Agent 对 `researcher` 子 Agent 的任务委派。
-
-运行时，脚本会先检查 `GOOGLE_API_KEY` 和 `DEEPSEEK_API_KEY`，再通过 `agent.invoke()` 执行任务，并用 `thread_id` 标识当前会话线程。整体上，它展示了长任务 Agent 的四个关键工程要点：资源路径稳定、输出格式清洗、上下文压缩和子 Agent 委派。
+* 该脚本演示一个 `Deep Agents` 风格的长任务 `Agent Harness`，重点展示文件系统工作区、上下文压缩、技能加载、任务列表和子 `Agent` 委派。
+* `MAIN_MODEL_NAME="google_genai:gemini-3.5-flash"` 作为主控 `Agent` 模型，负责规划、路由和最终汇总；`SUB_AGENT_MODEL_NAME="deepseek:deepseek-v4-flash"` 作为研究子 `Agent` 模型，负责具体资料研究任务。
+* `SCRIPT_DIR`、`AGENTS_FILE` 和 `SKILLS_DIR` 用于固定本地资源生成路径，确保 `AGENTS.md` 和 `skills/` 始终创建在脚本同级目录，而不是当前终端运行目录。
+* `prepare_local_sources()` 会生成本地长期指令文件 `AGENTS.md` 和技能说明目录 `skills/`，供 `MemoryMiddleware` 和 `SkillsMiddleware` 加载。
+* `FilesystemMiddleware` 提供文件系统工作区能力，让长任务可以围绕文件进行读写和中间结果管理。
+* `SummarizationMiddleware` 通过 `trigger=("tokens", 4000)` 和 `keep=("messages", 20)` 在上下文过长时自动摘要旧消息，降低上下文窗口压力。
+* `MemoryMiddleware` 从 `AGENTS.md` 加载长期指令，`SkillsMiddleware` 从 `skills/` 加载任务技能说明，用于增强 `Agent` 的长期行为约束和领域能力。
+* `TodoListMiddleware` 为复杂任务提供显式任务列表管理，帮助 `Agent` 拆解、跟踪和推进长任务。
+* `SubAgentMiddleware` 注册名为 `researcher` 的子 `Agent`，由主控 `Agent` 负责委派研究任务，子 `Agent` 使用独立模型和工具完成专业子任务。
+* `extract_text_content()` 用于从模型返回的 `content parts` 中提取纯文本，避免直接打印 `type`、`text`、`extras.signature` 等底层响应结构。
+* `thread_id="deep-agent-demo-thread"` 用于标识当前会话线程，方便 `Agent` 在同一线程中维持任务状态。
 
 ---
 
