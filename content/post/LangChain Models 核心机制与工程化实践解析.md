@@ -1,6 +1,7 @@
 ---
 title: "LangChain Models 核心机制与工程化实践解析"
 date: 2026-05-08T22:11:17+08:00
+lastmod: 2026-07-08T15:31:00+08:00
 slug: "langchain-models-engineering-guide"
 image: ""
 categories:

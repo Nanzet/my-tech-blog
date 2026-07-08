@@ -34,6 +34,8 @@
 
     {{ if $showFooter }}
     <footer class="article-time">
+        
+        <!-- 1. 发布时间 -->
         {{ if $showDate }}
         <div>
             {{ partial "helper/icon" "date" }}
@@ -45,6 +47,24 @@
         </div>
         {{ end }}
 
+        <!-- ⚡️ 2. 核心新增：最后更新时间 (仅在与发布时间不同时显示) -->
+        {{ if ne .Lastmod .Date }}
+        <div>
+            <!-- 这里使用 edit (编辑笔) 图标，和阅读时长的时钟图标区分开 -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M9 7h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"></path>
+                <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"></path>
+                <line x1="16" y1="5" x2="19" y2="8"></line>
+            </svg>
+            <time class="article-time--updated"
+                datetime='{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}'>
+                {{ .Lastmod | time.Format (or .Site.Params.dateFormat.published "Jan 02, 2006") }}
+            </time>
+        </div>
+        {{ end }}
+
+        <!-- 3. 阅读时长 -->
         {{ if $showReadingTime }}
         <div>
             {{ partial "helper/icon" "clock" }}
@@ -54,6 +74,7 @@
         </div>
         {{ end }}
 
+        <!-- 4. 浏览量 (Waline) -->
         <div>
             <svg xmlns="http://www.w3.org/2000/svg"
                 class="icon icon-tabler icon-tabler-eye" width="24" height="24"

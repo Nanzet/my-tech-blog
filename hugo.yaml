@@ -19,7 +19,7 @@ languages:
         weight: 2
         params:
             sidebar:
-                subtitle: 每天进步一点点~
+                subtitle: 道阻且长，行则将至。
 
 services:
     # Change it to your Disqus shortname before using
@@ -52,12 +52,12 @@ params:
         lastUpdated: Jan 02, 2006 15:04 MST
 
     sidebar:
-        emoji: 🌊
+        emoji: 🍋‍🟩
         subtitle: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         avatar:
             enabled: true
             local: true
-            src: img/pineapple.jpg
+            src: img/usagi.jpg
 
     article:
         math: false
