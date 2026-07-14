@@ -1,63 +1,93 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    // 设定阈值：超过 400px 就折叠
-    const MAX_HEIGHT = 400;
-
-    // 获取所有代码块
     const codeBlocks = document.querySelectorAll(".highlight");
 
     codeBlocks.forEach((block) => {
-        
-      // ==========================================
-      // ⚡️ 新增部分：将 title 属性转换为可复制的真实 DOM
-      // ==========================================
+      const codeContent = Array.from(block.children).find((child) =>
+        !child.matches(
+          ".code-toolbar, .code-filename, .copyCodeButton, .languageCodeButton, .toggleCodeButton"
+        )
+      );
+
+      if (codeContent) {
+        codeContent.classList.add("code-content");
+      }
+
       const title = block.getAttribute("title");
       if (title) {
-        // 创建真实的 div 元素
         const filenameDiv = document.createElement("div");
         filenameDiv.className = "code-filename";
         filenameDiv.textContent = title;
-        // 插入到代码块中
         block.appendChild(filenameDiv);
-        
-        // 移除原生 title 属性，防止鼠标悬停时出现多余的黑色提示框
         block.removeAttribute("title"); 
       }
-      // ==========================================
 
-      // 如果代码块高度超过阈值（下面的折叠逻辑保持不变）
-      if (block.offsetHeight > MAX_HEIGHT) {
-        // 1. 初始状态：添加折叠类
-        block.classList.add("collapsed");
+      block.classList.remove("collapsed");
+      block.classList.add("code-expanded");
 
-        // 2. 创建按钮容器
-        const btnDiv = document.createElement("div");
-        btnDiv.className = "read-more-btn";
+      const toolbar = block.querySelector(".code-toolbar") || document.createElement("div");
+      toolbar.className = "code-toolbar";
 
-        // 3. 创建按钮
-        const btn = document.createElement("button");
-        btn.innerHTML = "<span>⇩</span> 展开代码";
+      if (!toolbar.parentElement) {
+        block.prepend(toolbar);
+      }
 
-        // 4. 绑定点击事件
-        btn.addEventListener("click", function () {
-          const isCollapsed = block.classList.contains("collapsed");
+      const syncToolbarControls = () => {
+        const controls = [
+          block.querySelector(".languageCodeButton"),
+          block.querySelector(".copyCodeButton"),
+          block.querySelector(".toggleCodeButton"),
+        ];
 
-          if (isCollapsed) {
-            block.classList.remove("collapsed");
-            block.style.maxHeight = "none";
-            btn.innerHTML = "<span>⇧</span> 收起代码";
-          } else {
-            block.classList.add("collapsed");
-            block.style.maxHeight = "";
-            btn.innerHTML = "<span>⇩</span> 展开代码";
-            block.scrollIntoView({ behavior: "smooth", block: "center" });
+        controls.forEach((control) => {
+          if (control) {
+            toolbar.appendChild(control);
           }
         });
+      };
 
-        // 5. 插入按钮
-        btnDiv.appendChild(btn);
-        block.appendChild(btnDiv);
+      if (block.querySelector(".toggleCodeButton")) {
+        syncToolbarControls();
+        return;
       }
+
+      const toggleButton = document.createElement("button");
+      toggleButton.className = "toggleCodeButton";
+      toggleButton.type = "button";
+      toggleButton.setAttribute("aria-label", "收起代码");
+      toggleButton.setAttribute("title", "收起代码");
+      toggleButton.innerHTML = `
+        <svg class="toggleCodeIcon" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M5 12.5 10 7.5l5 5" />
+        </svg>
+      `;
+
+      toggleButton.addEventListener("click", function () {
+        const blockWasAboveViewport = block.getBoundingClientRect().top < 0;
+        const isCollapsed = block.classList.toggle("code-collapsed");
+        block.classList.toggle("code-expanded", !isCollapsed);
+        toggleButton.classList.toggle("is-collapsed", isCollapsed);
+        toggleButton.setAttribute("aria-expanded", String(!isCollapsed));
+        toggleButton.setAttribute("aria-label", isCollapsed ? "展开代码" : "收起代码");
+        toggleButton.setAttribute("title", isCollapsed ? "展开代码" : "收起代码");
+
+        if (isCollapsed && blockWasAboveViewport) {
+          requestAnimationFrame(() => {
+            block.scrollIntoView({ behavior: "auto", block: "start" });
+          });
+        }
+      });
+
+      toolbar.appendChild(toggleButton);
+      toggleButton.setAttribute("aria-expanded", "true");
+      syncToolbarControls();
+
+      const observer = new MutationObserver(syncToolbarControls);
+      observer.observe(block, {
+        childList: true,
+      });
+
+      window.addEventListener("load", syncToolbarControls, { once: true });
     });
   });
 </script>
