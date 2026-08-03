@@ -250,7 +250,7 @@ markup:
             unsafe: true
     tableOfContents:
         endLevel: 5
-        ordered: true
+        ordered: false
         startLevel: 2
     highlight:
         # noClasses：是否使用内联 CSS 样式而不是外部 CSS 文件。默认值为 true 。要使用外部 CSS 文件，请将此值设置为 false ，
